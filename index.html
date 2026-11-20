@@ -576,6 +576,15 @@
     .hero h1 span {
       display: block;
     }
+
+    /* The color logo stands in for "mahe" (its alt text keeps the heading readable
+   as "mahe dewan"); it sits just above "dewan". */
+    .hero-logo {
+      display: block;
+      width: auto;
+      height: 1.9em;
+      margin: 0 0 .04em -.08em;
+    }
     .rotor {
       margin: 18px 0 0;
       font-size: clamp(20px,2.4vw,28px);
@@ -1140,6 +1149,28 @@
       color: #9a9a9a;
     }
 
+    /* Filtered view: the company card spans the whole row. The black panel takes
+   two thirds and the text sits beside it; on phones it stacks as usual. */
+    .card.wide {
+      grid-column: 1/-1;
+      display: grid;
+      grid-template-columns: minmax(0,2fr) minmax(0,1fr);
+      gap: 0 28px;
+      align-items: end;
+    }
+    .card.wide .card-media {
+      aspect-ratio: 21/9;
+    }
+    .card.wide .co-name {
+      font-size: clamp(40px,6vw,76px);
+    }
+    .card.wide .card-body h3 {
+      margin-top: 0;
+    }
+    .card.wide .tags {
+      font-size: 14px;
+    }
+
     /* ---- Closing CTA + footer ---------------------------------------------- */
     .more-work {
       margin: 72px 0 0;
@@ -1334,6 +1365,15 @@
       }
     }
     @media (max-width:600px) {
+      .card.wide {
+        grid-template-columns: 1fr;
+      }
+      .card.wide .card-media {
+        aspect-ratio: 16/10;
+      }
+      .card.wide .card-body h3 {
+        margin-top: 12px;
+      }
       .site-nav .mark {
         gap: 8px;
         font-size: 15px;
@@ -1601,7 +1641,7 @@
       <!-- Hero: name and rotating role, summary (same copy as the resume) -->
       <div class="hero">
         <div>
-          <h1><span>mahe</span><span>dewan</span></h1>
+          <h1><img class="hero-logo" src="img/logo-hero.webp" alt="mahe" width="640" height="640" fetchpriority="high"><span>dewan</span></h1>
           <p class="rotor" aria-label="technical artist, virtual production specialist, pretty cool guy"><span class="w" aria-hidden="true">technical artist</span></p>
         </div>
         <p class="about">Emmy Award-winning technical artist and creative technologist with 10+ years of Unreal Engine experience across real-time 3D, virtual production, motion capture, video games, broadcast, and AR graphics. Has led small teams of artists and developers, established pipelines, and show-ran live productions for clients including CBS Sports, CBS News, NBC, Netflix, and Disney. Actively mentoring and teaching emerging artists, developers, and technologists.</p>
@@ -1649,7 +1689,7 @@
       <div class="grid">
 
         <!-- CBS News · 2026 Midterm Elections -->
-        <article class="card" data-group="astucemedia">
+        <article class="card" data-group="astucemedia" data-date="2026-11">
           <a class="card-media"
              href="https://www.newscaststudio.com/2026/11/05/cbs-news-2026-election-coverage-roundup/"
              target="_blank" rel="noopener"
@@ -1667,7 +1707,7 @@
         </article>
 
         <!-- Astucemedia: company summary card -->
-        <article class="card co-card" data-group="astucemedia">
+        <article class="card co-card" data-group="astucemedia" data-company>
           <a class="card-media" href="#resume" data-go="resume" aria-label="Astucemedia on the resume tab">
             <span class="co-panel" aria-hidden="true">
               <span class="co-name">Astucemedia</span>
@@ -1683,7 +1723,7 @@
         </article>
 
         <!-- Lucid: company summary card -->
-        <article class="card co-card" data-group="lucid">
+        <article class="card co-card" data-group="lucid" data-company>
           <a class="card-media" href="#resume" data-go="resume" aria-label="Lucid on the resume tab">
             <span class="co-panel" aria-hidden="true">
               <span class="co-name">Lucid</span>
@@ -1699,7 +1739,7 @@
         </article>
 
         <!-- Nikon Studio Extreme -->
-        <article class="card" data-group="disguise">
+        <article class="card" data-group="disguise" data-date="2025-01">
           <button class="card-media"
              type="button"
              data-type="yt" data-id="CjhQe-LAKFY"
@@ -1718,7 +1758,7 @@
         </article>
 
         <!-- Intuit Dome LA Clippers Scoreboard -->
-        <article class="card" data-group="disguise">
+        <article class="card" data-group="disguise" data-date="2024-08">
           <button class="card-media"
              type="button"
              data-type="yt" data-id="yzO8jngs4qo"
@@ -1737,7 +1777,7 @@
         </article>
 
         <!-- TUDN Copa América + Paris Olympics -->
-        <article class="card" data-group="disguise">
+        <article class="card" data-group="disguise" data-date="2024-07">
           <a class="card-media"
              href="https://www.disguise.one/en/insights/news/disguise-powered-tudns-groundbreaking-virtual-coverage-copa-america-and-paris"
              target="_blank" rel="noopener"
@@ -1755,7 +1795,7 @@
         </article>
 
         <!-- Portland Trail Blazers -->
-        <article class="card" data-group="disguise">
+        <article class="card" data-group="disguise" data-date="2023-10">
           <a class="card-media"
              href="https://www.disguise.one/en/insights/news/trail-blazers-become-first-nba-team-broadcast-augmented-reality-graphics-handheld"
              target="_blank" rel="noopener"
@@ -1773,7 +1813,7 @@
         </article>
 
         <!-- NBC Midterms -->
-        <article class="card" data-group="disguise">
+        <article class="card" data-group="disguise" data-date="2022-11">
           <a class="card-media"
              href="https://www.disguise.one/en/insights/news/disguise-creates-ar-version-of-washington-dc-for-msnbc-s-us-midterm-election-broadcast/"
              target="_blank" rel="noopener"
@@ -1792,7 +1832,7 @@
         </article>
 
         <!-- TUDN World Cup -->
-        <article class="card" data-group="disguise">
+        <article class="card" data-group="disguise" data-date="2022-12">
           <a class="card-media"
              href="https://www.disguise.one/en/insights/whitepaper/using-metahumans-large-scale-sports-production"
              target="_blank" rel="noopener"
@@ -1810,7 +1850,7 @@
         </article>
 
         <!-- DAZN Virtual Set -->
-        <article class="card" data-group="disguise">
+        <article class="card" data-group="disguise" data-date="2023-04">
           <a class="card-media"
              href="https://www.broadcastnow.co.uk/tech-innovation/nab-2023-disguise-moves-into-live-sport-graphics-with-dazn-and-motogp/5181204.article"
              target="_blank" rel="noopener"
@@ -1828,7 +1868,7 @@
         </article>
 
         <!-- disguise: company summary card -->
-        <article class="card co-card" data-group="disguise">
+        <article class="card co-card" data-group="disguise" data-company>
           <a class="card-media" href="#resume" data-go="resume" aria-label="disguise on the resume tab">
             <span class="co-panel" aria-hidden="true">
               <span class="co-name">disguise</span>
@@ -1844,7 +1884,7 @@
         </article>
 
         <!-- Netflix · Iron Chef -->
-        <article class="card" data-group="silver">
+        <article class="card" data-group="silver" data-date="2022-06">
           <button class="card-media"
              type="button"
              data-type="vimeo" data-id="803236944"
@@ -1863,7 +1903,7 @@
         </article>
 
         <!-- Alter Ego -->
-        <article class="card" data-group="silver">
+        <article class="card" data-group="silver" data-date="2021-09">
           <button class="card-media"
              type="button"
              data-type="vimeo" data-id="697164471"
@@ -1882,7 +1922,7 @@
         </article>
 
         <!-- CBS · March Madness -->
-        <article class="card" data-group="silver">
+        <article class="card" data-group="silver" data-date="2022-03">
           <button class="card-media"
              type="button"
              data-type="vimeo" data-id="704406387"
@@ -1902,7 +1942,7 @@
         </article>
 
         <!-- CBS · Super Bowl LV -->
-        <article class="card" data-group="silver">
+        <article class="card" data-group="silver" data-date="2021-02">
           <button class="card-media"
              type="button"
              data-type="vimeo" data-id="704416717"
@@ -1922,7 +1962,7 @@
         </article>
 
         <!-- Oregon x Halo -->
-        <article class="card" data-group="silver">
+        <article class="card" data-group="silver" data-date="2021-10">
           <button class="card-media"
              type="button"
              data-type="vimeo" data-id="704393327"
@@ -1941,7 +1981,7 @@
         </article>
 
         <!-- Zaxby&#x27;s · XR -->
-        <article class="card" data-group="silver">
+        <article class="card" data-group="silver" data-date="2021-06">
           <button class="card-media"
              type="button"
              data-type="vimeo" data-id="704419334"
@@ -1960,7 +2000,7 @@
         </article>
 
         <!-- Joji · 777 -->
-        <article class="card" data-group="silver">
+        <article class="card" data-group="silver" data-date="2020-11">
           <a class="card-media"
              href="https://pompandclout.com/process/joji-777-case-study/"
              target="_blank" rel="noopener"
@@ -1978,7 +2018,7 @@
         </article>
 
         <!-- Woodkid · Reactor -->
-        <article class="card" data-group="silver">
+        <article class="card" data-group="silver" data-date="2021-03">
           <button class="card-media"
              type="button"
              data-type="yt" data-id="q1RnoheRuDg"
@@ -1997,7 +2037,7 @@
         </article>
 
         <!-- Planters · Baby Nut -->
-        <article class="card" data-group="silver">
+        <article class="card" data-group="silver" data-date="2020-02">
           <button class="card-media"
              type="button"
              data-type="vimeo" data-id="395526021"
@@ -2016,7 +2056,7 @@
         </article>
 
         <!-- Silver Spoon: company summary card -->
-        <article class="card co-card" data-group="silver">
+        <article class="card co-card" data-group="silver" data-company>
           <a class="card-media" href="#resume" data-go="resume" aria-label="Silver Spoon on the resume tab">
             <span class="co-panel" aria-hidden="true">
               <span class="co-name">Silver Spoon</span>
@@ -2405,12 +2445,36 @@
 
 
     /* ---- Work filters -----------------------------------------------------------
-       Each card has data-group (astucemedia / lucid / disguise / silver). */
+       Each card has data-group (astucemedia / lucid / disguise / silver).
+       "all" shows every card in the hand-picked order from the page. Picking a
+       company shows only its cards: the company's summary card first, spanning
+       the full width (.wide), then its projects newest first (data-date, YYYY-MM).
+       The change cross-fades like the tabs do. */
     const filterButtons = [...document.querySelectorAll('.filters button')];
-    const allCards = [...document.querySelectorAll('.card')];
+    const grid = document.querySelector('.grid');
+    const allCards = [...grid.querySelectorAll('.card')];   // original order, kept for "all"
+
+    function applyFilter(group) {
+      filterButtons.forEach((b) => b.setAttribute('aria-pressed', b.dataset.f === group));
+      let order = allCards;
+      if (group !== 'all') {
+        const mine = allCards.filter((c) => c.dataset.group === group);
+        const company = mine.filter((c) => c.hasAttribute('data-company'));
+        const projects = mine.filter((c) => !c.hasAttribute('data-company'))
+          .sort((a, b) => (b.dataset.date || '').localeCompare(a.dataset.date || ''));
+        order = [...company, ...projects];
+      }
+      allCards.forEach((c) => {
+        c.hidden = group !== 'all' && c.dataset.group !== group;
+        c.classList.toggle('wide', group !== 'all' && c.hasAttribute('data-company'));
+      });
+      order.forEach((c) => grid.appendChild(c));
+    }
+
     filterButtons.forEach((btn) => btn.addEventListener('click', () => {
-      filterButtons.forEach((b) => b.setAttribute('aria-pressed', b === btn));
-      allCards.forEach((c) => (c.hidden = btn.dataset.f !== 'all' && c.dataset.group !== btn.dataset.f));
+      if (btn.getAttribute('aria-pressed') === 'true') return;
+      if (document.startViewTransition && !reduceMotion) document.startViewTransition(() => applyFilter(btn.dataset.f));
+      else applyFilter(btn.dataset.f);
     }));
 
 
