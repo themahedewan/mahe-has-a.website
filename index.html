@@ -328,10 +328,10 @@
    15% of the screen width on each side) so the color sits mostly behind the
    cards. On phones (single column) there's no side feather,
    only the top one. Scrolling back up to the summary fades it all away.
-   Instead of animating background-position (which repaints the full screen
-   every frame), the gradient is painted once on a 4x-size layer and that
-   layer is slid around with transform, which the GPU handles cheaply. The
-   animation only runs while the background is showing. */
+   Browsers with WebGL get the shader version (see "Background shader" in the
+   script), where noise makes both feathered edges billow. Without WebGL, this
+   CSS version is used: the gradient is painted once on a 4x-size layer that
+   slides with transform (cheap for the GPU), only while it's showing. */
     .bg-fx {
       position: fixed;
       inset: 0;
@@ -363,6 +363,23 @@
     }
     .bg-fx.on .bg-fx-inner {
       animation-play-state: running;
+    }
+
+    /* When the WebGL shader is running (.gl), it draws the gradient and both
+   feathers itself, so the CSS gradient layer and mask are switched off. */
+    .bg-fx.gl {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+    .bg-fx.gl .bg-fx-inner {
+      display: none;
+    }
+    .bg-gl {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
     }
     @keyframes bg-drift {
       0% {
@@ -2392,11 +2409,20 @@
        header and summary (.hero) have scrolled up out of view under the nav, the
        same point on every screen size. Scrolling back up until any of the summary
        shows again, or leaving the tab, fades it out. */
+    const bgFx = document.querySelector('.bg-fx');
+    const bgShader = createBackgroundShader(bgFx);   // null if WebGL isn't available
     {
-      const bg = document.querySelector('.bg-fx');
       const hero = document.querySelector('#work .hero');
-      let heroGone = false;
-      const set = (on) => { bg.classList.toggle('on', on); document.body.classList.toggle('bg-on', on); };
+      let heroGone = false, stopTimer = 0;
+      const set = (on) => {
+        if (on === bgFx.classList.contains('on')) return;
+        bgFx.classList.toggle('on', on);
+        document.body.classList.toggle('bg-on', on);
+        if (!bgShader) return;
+        clearTimeout(stopTimer);
+        if (on) bgShader.start();
+        else stopTimer = setTimeout(bgShader.stop, 1000);   // keep drawing through the fade-out
+      };
       const update = () => set(document.body.dataset.tab === 'work' && heroGone);
       new IntersectionObserver(([entry]) => {
         // Gone = not visible below the nav AND above the viewport (not just a hidden tab)
@@ -2404,6 +2430,126 @@
         update();
       }, { rootMargin: `-${nav.offsetHeight}px 0px 0px 0px` }).observe(hero);
       new MutationObserver(update).observe(document.body, { attributes: true, attributeFilter: ['data-tab'] });
+    }
+
+    /* ---- Background shader --------------------------------------------------------
+       Draws the background with WebGL so its soft edges can move. Per pixel:
+       - Color: the same -45deg orange > pink > blue > teal gradient as the CSS
+         version, seen through a window that drifts across a 4x-wide copy of it on
+         a 25s ease-in-out loop.
+       - Alpha: the top feather (clear at the top 15%, full by 90% down) times the
+         side feather (desktop only: fades out a little beyond the card column).
+         Both feathers are pushed around by two layers of slow, large-scale noise,
+         so the edges billow instead of being straight lines.
+       Renders at half resolution (it's all soft shapes) and only while showing.
+       With reduced motion, it draws one still frame. */
+    function createBackgroundShader(host) {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false });
+      if (!gl) return null;
+
+      const vertexSrc = `attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }`;
+      const fragmentSrc = `
+        precision mediump float;
+        uniform vec2  uRes;     // canvas size in device pixels
+        uniform vec2  uCss;     // viewport size in CSS pixels
+        uniform float uTime;    // seconds
+        uniform float uDrift;   // 0..1, position of the drifting color window
+        uniform float uSides;   // 1 = feather the sides (desktop), 0 = don't (phones)
+
+        float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+        float noise(vec2 p){
+          vec2 i = floor(p), f = fract(p), u = f * f * (3.0 - 2.0 * f);
+          return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),
+                     mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+        }
+        float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 3; i++){ v += a * noise(p); p = p * 2.03 + 17.1; a *= 0.5; } return v / 0.875; }
+        float ramp(float x, float a, float b){ return clamp((x - a) / max(b - a, 1e-3), 0.0, 1.0); }
+        vec3 colors(float t){
+          vec3 c1 = vec3(0.933, 0.467, 0.322), c2 = vec3(0.906, 0.235, 0.494),
+               c3 = vec3(0.137, 0.651, 0.835), c4 = vec3(0.137, 0.835, 0.671);
+          t = clamp(t, 0.0, 1.0) * 3.0;
+          return t < 1.0 ? mix(c1, c2, t) : t < 2.0 ? mix(c2, c3, t - 1.0) : mix(c3, c4, t - 2.0);
+        }
+        void main(){
+          vec2 uv = vec2(gl_FragCoord.x / uRes.x, 1.0 - gl_FragCoord.y / uRes.y);   // 0..1, y down
+
+          // Color window drifting across a 4x copy of the gradient
+          vec2 big = vec2((uv.x + uDrift * 3.0) / 4.0, (uv.y + 1.5) / 4.0);
+          vec3 col = colors(((1.0 - big.x) + (1.0 - big.y)) * 0.5);
+
+          // Large, slow noise (blobs about half the screen across), two independent layers
+          vec2 q = uv * vec2(uCss.x / uCss.y, 1.0) * 1.4;
+          float n1 = fbm(q + vec2(uTime * 0.020, uTime * 0.013)) - 0.5;
+          float n2 = fbm(q * 0.9 + vec2(41.3 - uTime * 0.017, 7.7 + uTime * 0.011)) - 0.5;
+
+          // Top feather, its edge displaced by noise
+          float y = uv.y + n1 * 0.32;
+          float top = y < 0.5 ? 0.35 * ramp(y, 0.15, 0.5) : 0.35 + 0.65 * ramp(y, 0.5, 0.9);
+
+          // Side feather (desktop), same stops as the CSS version, displaced by noise
+          float x = uv.x * uCss.x + n2 * 0.22 * uCss.x;
+          float W = uCss.x;
+          float l0 = max(0.0, 0.35 * W - 760.0), l1 = max(0.06 * W, 0.35 * W - 540.0);
+          float r1 = min(0.94 * W, 0.65 * W + 540.0), r0 = min(W, 0.65 * W + 760.0);
+          float sides = mix(1.0, ramp(x, l0, l1) * (1.0 - ramp(x, r1, r0)), uSides);
+
+          float a = top * sides;
+          gl_FragColor = vec4(col * a, a);
+        }`;
+
+      const compile = (type, src) => {
+        const sh = gl.createShader(type); gl.shaderSource(sh, src); gl.compileShader(sh);
+        return gl.getShaderParameter(sh, gl.COMPILE_STATUS) ? sh : null;
+      };
+      const vs = compile(gl.VERTEX_SHADER, vertexSrc), fs = compile(gl.FRAGMENT_SHADER, fragmentSrc);
+      if (!vs || !fs) return null;
+      const prog = gl.createProgram();
+      gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return null;
+      gl.useProgram(prog);
+
+      // One triangle that covers the screen
+      gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+      const loc = gl.getAttribLocation(prog, 'p');
+      gl.enableVertexAttribArray(loc);
+      gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+      const u = Object.fromEntries(['uRes', 'uCss', 'uTime', 'uDrift', 'uSides'].map((n) => [n, gl.getUniformLocation(prog, n)]));
+
+      canvas.className = 'bg-gl';
+      host.prepend(canvas);
+      host.classList.add('gl');              // switches off the CSS gradient + mask
+
+      const SCALE = 0.5, LOOP_S = 25;
+      const easeInOut = (t) => t * t * (3 - 2 * t);
+      const resize = () => {
+        canvas.width = Math.max(1, Math.round(innerWidth * SCALE));
+        canvas.height = Math.max(1, Math.round(innerHeight * SCALE));
+        gl.viewport(0, 0, canvas.width, canvas.height);
+      };
+      const draw = (seconds) => {
+        const phase = (seconds % LOOP_S) / LOOP_S;   // out to the far side and back, like the CSS keyframes
+        const drift = phase < 0.5 ? easeInOut(phase * 2) : 1 - easeInOut((phase - 0.5) * 2);
+        gl.uniform2f(u.uRes, canvas.width, canvas.height);
+        gl.uniform2f(u.uCss, innerWidth, innerHeight);
+        gl.uniform1f(u.uTime, seconds);
+        gl.uniform1f(u.uDrift, drift);
+        gl.uniform1f(u.uSides, innerWidth > 600 ? 1 : 0);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      };
+
+      let raf = 0;
+      const loop = (now) => { draw(now / 1000); raf = requestAnimationFrame(loop); };
+      addEventListener('resize', () => { resize(); if (!raf) draw(performance.now() / 1000); });
+      resize();
+      return {
+        start() {
+          if (reduceMotion) { draw(0); return; }
+          if (!raf) raf = requestAnimationFrame(loop);
+        },
+        stop() { cancelAnimationFrame(raf); raf = 0; },
+      };
     }
 
 
