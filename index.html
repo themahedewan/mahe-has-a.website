@@ -10,7 +10,7 @@
                1. Resume styles: shared colors/type + the resume tab
                2. Site styles: everything else, in commented sections
                3. Generated data: embedded font files and pixel-pulse palettes
-    <body>   nav · work tab (hero, reviews, work grid) · resume tab · footer ·
+    <body>   nav · work tab (hero, reviews, work grid) · reel tab · resume tab · footer ·
              video lightbox · site script · generated data (mosaic templates,
              embedded PDFs)
 
@@ -378,7 +378,7 @@
 
     /* ---- Work tab: hero ---------------------------------------------------- */
 
-    /* Name + rotating role on the left, reel on the right; stacks on small screens. */
+    /* Name + rotating role on the left, summary on the right; stacks on small screens. */
     .work {
       max-width: 1180px;
       margin: 0 auto;
@@ -386,7 +386,7 @@
     }
     .hero {
       display: grid;
-      grid-template-columns: minmax(0,5fr) minmax(0,7fr);
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
       gap: 40px;
       align-items: end;
     }
@@ -416,37 +416,39 @@
       transform: translateY(6px);
     }
     .hero .about {
-      margin: 22px 0 0;
-      max-width: 30em;
-      font-size: 16px;
+      margin: 0;
+      max-width: 34em;
+      font-size: 17px;
+      line-height: 1.5;
       color: #333;
+      justify-self: end;
     }
 
     /* ---- Reel -------------------------------------------------------------- */
 
-    /* Muted, looping YouTube embed. pointer-events:none means visitors can't
-   click into the player, so it can't be paused or unmuted. */
-    .reel {
+    /* Reel tab: the muted, looping YouTube embed fills everything below the nav.
+   The iframe is sized like object-fit:cover (at least as wide AND as tall as
+   the area, keeping 16:9) and centered, so there are no black bars; the
+   overflow is cropped. --nav-h is measured by script. pointer-events:none
+   means visitors can't click into the player to pause or unmute it. */
+    .reel-tab {
       position: relative;
-      aspect-ratio: 16/9;
-      background: #111;
-      border-radius: 6px;
+      height: calc(100svh - var(--nav-h,60px));
+      background: #000;
       overflow: hidden;
     }
-    .reel iframe {
+    .reel-tab iframe {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
       border: 0;
       pointer-events: none;
+      width: max(100%,calc((100svh - var(--nav-h,60px)) * 16 / 9));
+      height: max(100%,calc(100vw * 9 / 16));
     }
-    .reel-label {
-      display: flex;
-      justify-content: space-between;
-      margin: 10px 2px 0;
-      font-size: 13px;
-      color: var(--mute);
+    body[data-tab="reel"] .site-foot {
+      display: none;
     }
 
     /* ---- Reviews ticker ---------------------------------------------------- */
@@ -916,7 +918,10 @@
       }
       .hero {
         grid-template-columns: 1fr;
-        gap: 28px;
+        gap: 24px;
+      }
+      .hero .about {
+        justify-self: start;
       }
     }
     @media (max-width:600px) {
@@ -984,7 +989,7 @@
       margin: .5in;
     }
     @media print {
-      .site-nav,.work,.site-foot,.resume-tools,dialog {
+      .site-nav,.work,.reel-tab,.site-foot,.resume-tools,dialog {
         display: none!important;
       }
       #resume {
@@ -1141,6 +1146,7 @@
       <a class="mark" href="#" data-go="work">mahe dewan</a>
       <div class="tabs" role="tablist" aria-label="Sections">
         <button class="tab" role="tab" id="t-work" data-tab="work" aria-controls="work" aria-selected="true">work</button>
+        <button class="tab" role="tab" id="t-reel" data-tab="reel" aria-controls="reel" aria-selected="false" tabindex="-1">reel</button>
         <button class="tab" role="tab" id="t-resume" data-tab="resume" aria-controls="resume" aria-selected="false" tabindex="-1">resume</button>
       </div>
     </div>
@@ -1153,22 +1159,13 @@
          ==================================================================== -->
     <section id="work" class="work" role="tabpanel" aria-labelledby="t-work">
 
-      <!-- Hero: name, rotating role, summary (same copy as the resume), reel -->
+      <!-- Hero: name and rotating role, summary (same copy as the resume) -->
       <div class="hero">
         <div>
           <h1><span>mahe</span><span>dewan</span></h1>
           <p class="rotor" aria-label="technical artist, virtual production specialist, pretty cool guy"><span class="w" aria-hidden="true">technical artist</span></p>
-          <p class="about">Emmy Award-winning technical artist and creative technologist with 10+ years of Unreal Engine experience across real-time 3D, virtual production, motion capture, video games, broadcast, and AR graphics. Has led small teams of artists and developers, established pipelines, and show-ran live productions for clients including CBS Sports, CBS News, NBC, Netflix, and Disney. Actively mentoring and teaching emerging artists, developers, and technologists.</p>
         </div>
-        <div>
-          <!-- Muted autoplay loop; controls, keyboard, and fullscreen are disabled -->
-          <div class="reel">
-            <iframe src="https://www.youtube-nocookie.com/embed/9_QFtA0gWY0?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=9_QFtA0gWY0&amp;controls=0&amp;disablekb=1&amp;fs=0&amp;iv_load_policy=3&amp;rel=0&amp;playsinline=1&amp;modestbranding=1"
-                    title="Mahe Dewan reel (muted)" allow="autoplay; encrypted-media"
-                    referrerpolicy="strict-origin-when-cross-origin" tabindex="-1"></iframe>
-          </div>
-          <p class="reel-label"><span>reel</span></p>
-        </div>
+        <p class="about">Emmy Award-winning technical artist and creative technologist with 10+ years of Unreal Engine experience across real-time 3D, virtual production, motion capture, video games, broadcast, and AR graphics. Has led small teams of artists and developers, established pipelines, and show-ran live productions for clients including CBS Sports, CBS News, NBC, Netflix, and Disney. Actively mentoring and teaching emerging artists, developers, and technologists.</p>
       </div>
 
       <!-- Reviews ticker. The second list is a copy (filled in by script) so the
@@ -1607,6 +1604,18 @@
     </section>
 
     <!-- ====================================================================
+         REEL TAB
+         Full-screen, muted, looping reel. The player URL sits in data-src and
+         is only loaded the first time this tab opens. Controls, keyboard, and
+         fullscreen are disabled; enablejsapi lets the script pause it.
+         ==================================================================== -->
+    <section id="reel" class="reel-tab" role="tabpanel" aria-labelledby="t-reel" hidden>
+      <iframe data-src="https://www.youtube-nocookie.com/embed/9_QFtA0gWY0?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=9_QFtA0gWY0&amp;controls=0&amp;disablekb=1&amp;fs=0&amp;iv_load_policy=3&amp;rel=0&amp;playsinline=1&amp;modestbranding=1&amp;enablejsapi=1"
+              title="Mahe Dewan reel (muted)" allow="autoplay; encrypted-media"
+              referrerpolicy="strict-origin-when-cross-origin" tabindex="-1"></iframe>
+    </section>
+
+    <!-- ====================================================================
          RESUME TAB
          Download buttons point at PDFs embedded at the end of the page.
          The resume itself is generated from the same source as the CV.
@@ -1822,10 +1831,32 @@
 
 
     /* ---- Tabs -------------------------------------------------------------------
-       "work" is the default. "#resume" in the URL opens the resume tab, so that
-       link can be shared directly. Arrow keys move between tabs. */
+       "work" is the default. "#reel" or "#resume" in the URL opens that tab, so
+       those links can be shared directly. Arrow keys move between tabs. The
+       active tab is mirrored on <body data-tab> for tab-specific styling. */
     const tabs = [...document.querySelectorAll('.tab')];
-    const panels = { work: document.getElementById('work'), resume: document.getElementById('resume') };
+    const panels = {
+      work: document.getElementById('work'),
+      reel: document.getElementById('reel'),
+      resume: document.getElementById('resume'),
+    };
+    const tabFromHash = () => (panels[location.hash.slice(1)] ? location.hash.slice(1) : 'work');
+
+    // Reel: load the player the first time the tab opens, then pause/resume it
+    // through the YouTube iframe API so it never plays unseen in the background.
+    const reelFrame = document.querySelector('#reel iframe');
+    function setReelPlaying(on) {
+      if (on && !reelFrame.src) { reelFrame.src = reelFrame.dataset.src; return; }
+      if (!reelFrame.src) return;
+      reelFrame.contentWindow.postMessage(
+        JSON.stringify({ event: 'command', func: on ? 'playVideo' : 'pauseVideo', args: '' }), '*');
+    }
+
+    // The reel fills the viewport below the sticky nav, so keep its height in a CSS variable
+    const nav = document.querySelector('.site-nav');
+    const setNavHeight = () => document.documentElement.style.setProperty('--nav-h', nav.offsetHeight + 'px');
+    setNavHeight();
+    addEventListener('resize', setNavHeight);
 
     function showTab(name, updateUrl) {
       if (!panels[name]) name = 'work';
@@ -1836,7 +1867,9 @@
       });
       Object.entries(panels).forEach(([key, panel]) => (panel.hidden = key !== name));
       document.getElementById('resume-tools').hidden = name !== 'resume';
-      if (updateUrl) history.replaceState(null, '', name === 'work' ? location.pathname + location.search : '#resume');
+      document.body.dataset.tab = name;
+      setReelPlaying(name === 'reel');
+      if (updateUrl) history.replaceState(null, '', name === 'work' ? location.pathname + location.search : '#' + name);
       window.scrollTo({ top: 0 });
     }
 
@@ -1851,8 +1884,8 @@
     });
     document.querySelectorAll('[data-go]').forEach((a) =>
       a.addEventListener('click', (e) => { e.preventDefault(); showTab(a.dataset.go, true); }));
-    showTab(location.hash === '#resume' ? 'resume' : 'work', false);
-    addEventListener('hashchange', () => showTab(location.hash === '#resume' ? 'resume' : 'work', false));
+    showTab(tabFromHash(), false);
+    addEventListener('hashchange', () => showTab(tabFromHash(), false));
 
 
     /* ---- Rotating role line -----------------------------------------------------
