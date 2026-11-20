@@ -2485,11 +2485,11 @@
           float n2 = fbm(q * 0.9 + vec2(41.3 - uTime * 0.017, 7.7 + uTime * 0.011)) - 0.5;
 
           // Top feather, its edge displaced by noise
-          float y = uv.y + n1 * 0.48;
+          float y = uv.y + n1 * 0.60;
           float top = y < 0.5 ? 0.35 * ramp(y, 0.15, 0.5) : 0.35 + 0.65 * ramp(y, 0.5, 0.9);
 
           // Side feather (desktop), same stops as the CSS version, displaced by noise
-          float x = uv.x * uCss.x + n2 * 0.36 * uCss.x;
+          float x = uv.x * uCss.x + n2 * 0.42 * uCss.x;
           float W = uCss.x;
           float l0 = max(0.0, 0.15 * W - 760.0), l1 = max(0.03 * W, 0.15 * W - 540.0);
           float r1 = min(0.97 * W, 0.85 * W + 540.0), r0 = min(W, 0.85 * W + 760.0);
@@ -2497,7 +2497,7 @@
 
           // Slow noise also opens soft gaps that drift through the middle
           float n3 = fbm(q * 0.75 + vec2(-uTime * 0.012, 23.4 + uTime * 0.016));
-          float holes = mix(1.0, smoothstep(0.18, 0.48, n3), 0.8);
+          float holes = mix(1.0, smoothstep(0.30, 0.62, n3), 0.85);
 
           float a = top * sides * holes;
           gl_FragColor = vec4(col * a, a);
