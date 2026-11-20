@@ -772,10 +772,11 @@
       animation: tab-fade-in .4s ease .1s both;
     }
 
-    /* ---- Mahe+ (reviews paywall joke) -------------------------------------- */
+    /* ---- Mahee (reviews paywall joke) -------------------------------------- */
 
     /* A streaming-service style upsell at the end of the expanded reviews, and the
-   pop-up its Subscribe button opens. "+" uses the background gradient colors. */
+   pop-up its Subscribe button opens. The second "e" in "Mahee" uses the
+   background gradient colors. */
     .mplus b {
       font-weight: 700;
       background: linear-gradient(90deg,#ee7752,#e73c7e,#23a6d5,#23d5ab);
@@ -1562,9 +1563,9 @@
             <ul class="ticker-set" aria-hidden="true"></ul>
           </div>
         </div>
-        <!-- Mahe+ "paywall" (a joke): only shown in the expanded list -->
+        <!-- Mahee "paywall" (a joke): only shown in the expanded list -->
         <div class="mplus-box">
-          <p>Want to get the full details on the reviewers? Subscribe to <span class="mplus">Mahe<b>+</b></span></p>
+          <p>Want to get the full details on the reviewers? Subscribe to <span class="mplus">Mahe<b>e</b></span></p>
           <button type="button" class="mplus-btn" data-mplus>Subscribe</button>
         </div>
       </section>
@@ -1978,7 +1979,7 @@
         </div>
         <div>
           <h2>Want More Mahe?</h2>
-          <button type="button" class="btn" data-mplus>Subscribe to <span class="mplus">Mahe<b>+</b></span></button>
+          <button type="button" class="btn" data-mplus>Subscribe to <span class="mplus">Mahe<b>e</b></span></button>
         </div>
       </div>
     </section>
@@ -2184,14 +2185,14 @@
     <span class="c">© 2026 Mahe Dewan</span>
   </footer>
 
-  <!-- Mahe+ pop-up, opened by the Subscribe button in the expanded reviews -->
+  <!-- Mahee pop-up, opened by the Subscribe button in the expanded reviews -->
   <dialog class="mplus-dialog" id="mplus" aria-labelledby="mplus-title">
     <button type="button" class="mplus-x" data-close aria-label="Close">×</button>
-    <p class="mplus-kicker"><span class="mplus">Mahe<b>+</b></span></p>
-    <h2 id="mplus-title">Get Mahe+ By Hiring Me!</h2>
-    <p class="mplus-sub">Includes expanded access to the reviewers, up-and-coming work, and a gateway to the guy himself.</p>
+    <p class="mplus-kicker"><span class="mplus">Mahe<b>e</b></span></p>
+    <h2 id="mplus-title">Get <span class="mplus">Mahe<b>e</b></span> By Hiring Me!</h2>
+    <p class="mplus-sub">Includes expanded access to the reviewers, <span style="white-space:nowrap">up-and-coming</span> work, and a gateway to the guy himself.</p>
     <div class="mplus-actions">
-      <a class="btn" href="mailto:mahedewan@gmail.com?subject=Mahe%2B">email me</a>
+      <a class="btn" href="mailto:mahedewan@gmail.com?subject=Mahee">email me</a>
       <a class="mplus-alt" href="#resume" data-go="resume">see the resume →</a>
     </div>
   </dialog>
@@ -2580,7 +2581,7 @@
     }
     toggle.addEventListener('click', () => setOpen(!open));
 
-    // Mahe+: every Subscribe button (reviews banner, closing section) opens the
+    // Mahee: every Subscribe button (reviews banner, closing section) opens the
     // (very exclusive) pop-up
     const mplus = document.getElementById('mplus');
     document.querySelectorAll('[data-mplus]').forEach((b) => b.addEventListener('click', () => mplus.showModal()));
