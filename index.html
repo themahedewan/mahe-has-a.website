@@ -2438,7 +2438,8 @@
          version, seen through a window that drifts across a 4x-wide copy of it on
          a 25s ease-in-out loop.
        - Alpha: the top feather (clear at the top 15%, full by 90% down) times the
-         side feather (desktop only: fades out a little beyond the card column).
+         side feather (desktop only). The sides now reach the screen edges, so
+         their soft edge comes entirely from the noise pushing it inward.
          Both feathers are pushed around by slow, large-scale noise, strongly
          enough that the edges billow deep into the screen, and a third noise layer
          opens soft gaps that drift through the middle. All of it moves slowly.
@@ -2485,19 +2486,20 @@
           float n2 = fbm(q * 0.9 + vec2(41.3 - uTime * 0.017, 7.7 + uTime * 0.011)) - 0.5;
 
           // Top feather, its edge displaced by noise
-          float y = uv.y + n1 * 0.60;
+          float y = uv.y + n1 * 0.72;
           float top = y < 0.5 ? 0.35 * ramp(y, 0.15, 0.5) : 0.35 + 0.65 * ramp(y, 0.5, 0.9);
 
           // Side feather (desktop), same stops as the CSS version, displaced by noise
-          float x = uv.x * uCss.x + n2 * 0.42 * uCss.x;
+          float x = uv.x * uCss.x + n2 * 0.50 * uCss.x;
           float W = uCss.x;
-          float l0 = max(0.0, 0.15 * W - 760.0), l1 = max(0.03 * W, 0.15 * W - 540.0);
-          float r1 = min(0.97 * W, 0.85 * W + 540.0), r0 = min(W, 0.85 * W + 760.0);
+          // Soft band sits just past the screen edges: full color reaches the sides,
+          // and the noise pulls a feathered (never hard) edge inward.
+          float l0 = -0.18 * W, l1 = -0.03 * W, r1 = 1.03 * W, r0 = 1.18 * W;
           float sides = mix(1.0, ramp(x, l0, l1) * (1.0 - ramp(x, r1, r0)), uSides);
 
           // Slow noise also opens soft gaps that drift through the middle
           float n3 = fbm(q * 0.75 + vec2(-uTime * 0.012, 23.4 + uTime * 0.016));
-          float holes = mix(1.0, smoothstep(0.30, 0.62, n3), 0.85);
+          float holes = mix(1.0, smoothstep(0.30, 0.62, n3), 1.0);
 
           float a = top * sides * holes;
           gl_FragColor = vec4(col * a, a);
@@ -2526,7 +2528,7 @@
       host.prepend(canvas);
       host.classList.add('gl');              // switches off the CSS gradient + mask
 
-      const SCALE = 0.5, LOOP_S = 25;
+      const SCALE = 0.5, LOOP_S = 25, NOISE_SPEED = 1.1;   // noise runs 10% faster than real time
       const easeInOut = (t) => t * t * (3 - 2 * t);
       const resize = () => {
         canvas.width = Math.max(1, Math.round(innerWidth * SCALE));
@@ -2538,7 +2540,7 @@
         const drift = phase < 0.5 ? easeInOut(phase * 2) : 1 - easeInOut((phase - 0.5) * 2);
         gl.uniform2f(u.uRes, canvas.width, canvas.height);
         gl.uniform2f(u.uCss, innerWidth, innerHeight);
-        gl.uniform1f(u.uTime, seconds);
+        gl.uniform1f(u.uTime, seconds * NOISE_SPEED);
         gl.uniform1f(u.uDrift, drift);
         gl.uniform1f(u.uSides, innerWidth > 600 ? 1 : 0);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
