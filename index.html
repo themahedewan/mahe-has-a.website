@@ -11,7 +11,7 @@
                1. Resume styles: shared colors/type + the resume tab
                2. Site styles: everything else, in commented sections
                3. Generated data: embedded font files and pixel-pulse palettes
-    <body>   nav · work tab (hero, reviews, work grid) · reel tab · resume tab · footer ·
+    <body>   background layer · nav · work tab (hero, reviews, work grid) · reel tab · resume tab · footer ·
              video lightbox · site script · generated data (mosaic templates,
              embedded PDFs)
 
@@ -316,6 +316,63 @@
    Colors, type, and base element styles (--ink, --mute, --line, ...) are
    defined in the RESUME STYLES block above, so both tabs share one palette.
    ========================================================================== */
+
+    /* ---- Bottom-of-page background (work tab) ------------------------------- */
+
+    /* An animated gradient (after Manuel Pinto's "Pure CSS Gradient Background
+   Animation") that only appears once you reach the very bottom of the work
+   tab, fading in slowly behind the content. A mask feathers it out toward
+   the top of the screen, so the color rises from the bottom. Scrolling back
+   up fades the whole thing away.
+   Instead of animating background-position (which repaints the full screen
+   every frame), the gradient is painted once on a 4x-size layer and that
+   layer is slid around with transform, which the GPU handles cheaply. The
+   animation only runs while the background is showing. */
+    .bg-fx {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .9s ease;
+      -webkit-mask-image: linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.35) 35%,#000 75%);
+      mask-image: linear-gradient(to bottom,transparent 0%,rgba(0,0,0,.35) 35%,#000 75%);
+    }
+    .bg-fx.on {
+      opacity: 1;
+      transition: opacity 2.4s ease;
+    }
+    .bg-fx-inner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 400%;
+      height: 400%;
+      background: linear-gradient(-45deg,#ee7752,#e73c7e,#23a6d5,#23d5ab);
+      will-change: transform;
+      animation: bg-drift 15s ease infinite paused;
+    }
+    .bg-fx.on .bg-fx-inner {
+      animation-play-state: running;
+    }
+    @keyframes bg-drift {
+      0% {
+        transform: translate(0,-37.5%);
+      }
+      50% {
+        transform: translate(-75%,-37.5%);
+      }
+      100% {
+        transform: translate(0,-37.5%);
+      }
+    }
+    body.bg-on .site-foot,body.bg-on .site-foot a {
+      color: var(--ink);
+    }
+    body.bg-on .more-work p {
+      color: var(--ink);
+    }
 
     /* ---- Navigation + tabs ------------------------------------------------- */
 
@@ -1060,6 +1117,10 @@
       * {
         transition: none!important;
       }
+      .bg-fx-inner {
+        animation: none;
+        transform: translate(-37.5%,-37.5%);
+      }
       .ticker-set[aria-hidden] {
         display: none;
       }
@@ -1236,6 +1297,10 @@
 </head>
 
 <body>
+
+  <!-- Animated gradient shown at the bottom of the work tab (see "Bottom-of-page
+       background" in the styles and script) -->
+  <div class="bg-fx" aria-hidden="true"><div class="bg-fx-inner"></div></div>
 
   <!-- ======================================================================
        NAVIGATION
@@ -2271,6 +2336,26 @@
     toggle.addEventListener('click', () => setOpen(!open));
     new IntersectionObserver(([entry]) => { if (!entry.isIntersecting) setOpen(false); })
       .observe(ticker);
+
+
+    /* ---- Bottom-of-page background ---------------------------------------------
+       On the work tab, reaching the very bottom of the page turns the gradient on
+       (it fades in slowly). Any scroll back up, or leaving the tab, turns it off. */
+    {
+      const bg = document.querySelector('.bg-fx');
+      let lastY = scrollY;
+      const atBottom = () => document.documentElement.scrollHeight - (scrollY + innerHeight) <= 2;
+      const set = (on) => { bg.classList.toggle('on', on); document.body.classList.toggle('bg-on', on); };
+      addEventListener('scroll', () => {
+        const y = scrollY;
+        if (document.body.dataset.tab !== 'work') set(false);
+        else if (atBottom()) set(true);
+        else if (y < lastY) set(false);              // scrolling up
+        lastY = y;
+      }, { passive: true });
+      new MutationObserver(() => { if (document.body.dataset.tab !== 'work') set(false); })
+        .observe(document.body, { attributes: true, attributeFilter: ['data-tab'] });
+    }
 
 
     /* ---- Print ------------------------------------------------------------------
