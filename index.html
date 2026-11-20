@@ -27,6 +27,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- YouTube refuses to play embeds (error 153) unless the page sends a referrer -->
   <meta name="referrer" content="strict-origin-when-cross-origin">
+  <!-- Opening #reel or #resume directly: mark it before anything renders, so the
+       work tab (and its images) never starts loading in the background. -->
+  <script>if (/^#(reel|resume)$/.test(location.hash)) document.documentElement.dataset.tab0 = location.hash.slice(1);</script>
   <title>Mahe Dewan — Technical Artist &amp; Virtual Production</title>
   <meta name="description" content="Work and resume of Mahe Dewan, Emmy Award-winning technical artist and virtual production specialist working in Unreal Engine.">
   <meta property="og:title" content="Mahe Dewan — Technical Artist &amp; Virtual Production">
@@ -613,6 +616,66 @@
       height: calc(100svh - var(--nav-h,60px));
       padding: var(--pad);
       background: #000;
+    }
+    html[data-tab0] #work {
+      display: none;
+    }
+    .reel-poster {
+      all: unset;
+      box-sizing: border-box;
+      position: relative;
+      display: block;
+      cursor: pointer;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #111;
+      aspect-ratio: 16/9;
+      width: min(100%,calc((100svh - var(--nav-h,60px) - 2 * var(--pad)) * 16 / 9));
+    }
+    .reel-poster img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .92;
+      transition: opacity .3s,transform .5s cubic-bezier(.2,.7,.2,1);
+    }
+    .reel-poster:hover img {
+      opacity: 1;
+      transform: scale(1.02);
+    }
+    .reel-play {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%,-50%);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      color: #000;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 12px 22px 12px 18px;
+      border-radius: 999px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.35);
+      transition: transform .2s;
+    }
+    .reel-play::before {
+      content: "";
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 8px 0 8px 13px;
+      border-color: transparent transparent transparent #000;
+    }
+    .reel-poster:hover .reel-play {
+      transform: translate(-50%,-50%) scale(1.05);
+    }
+    .reel-poster:focus-visible {
+      outline: 2px solid var(--link);
+      outline-offset: 4px;
     }
     .reel-tab iframe {
       display: block;
@@ -1986,13 +2049,18 @@
 
     <!-- ====================================================================
          REEL TAB
-         A regular YouTube player for the reel, centered on a dark stage. The
-         player URL sits in data-src and is only loaded the first time this tab
-         opens; enablejsapi lets the script pause it when you switch tabs.
+         A still frame with a play button, centered on a dark stage. Pressing it
+         swaps in the YouTube player (URL in data-src) and starts the reel;
+         enablejsapi lets the script pause it when you switch tabs.
          ==================================================================== -->
     <section id="reel" class="reel-tab" role="tabpanel" aria-labelledby="t-reel" hidden>
-      <iframe data-src="https://www.youtube-nocookie.com/embed/9_QFtA0gWY0?rel=0&amp;playsinline=1&amp;iv_load_policy=3&amp;enablejsapi=1"
-              title="Mahe Dewan reel" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+      <button type="button" class="reel-poster" aria-label="Play Mahe Dewan's reel">
+        <img src="https://i.ytimg.com/vi/9_QFtA0gWY0/maxresdefault.jpg" alt="" loading="lazy" decoding="async"
+             onerror="if (!this.dataset.fb) { this.dataset.fb = 1; this.src = 'https://i.ytimg.com/vi/9_QFtA0gWY0/hqdefault.jpg'; }">
+        <span class="reel-play" aria-hidden="true">play reel</span>
+      </button>
+      <iframe hidden data-src="https://www.youtube-nocookie.com/embed/9_QFtA0gWY0?autoplay=1&amp;rel=0&amp;playsinline=1&amp;iv_load_policy=3&amp;enablejsapi=1"
+              title="Mahe Dewan reel" allow="autoplay; accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     </section>
 
@@ -2227,12 +2295,19 @@
     };
     const tabFromHash = () => (panels[location.hash.slice(1)] ? location.hash.slice(1) : 'work');
 
-    // Reel: load the player the first time the tab opens (so visitors who never
-    // open it don't download it). If it's playing when they switch tabs, pause it
-    // through the YouTube iframe API; it waits for them to press play again.
+    // Reel: the tab shows a lightweight still frame with a play button. YouTube's
+    // player (over a megabyte of scripts) only loads when someone presses play,
+    // and then starts playing right away. If it's playing when they switch tabs,
+    // it's paused through the YouTube iframe API.
     const reelFrame = document.querySelector('#reel iframe');
+    const reelPoster = document.querySelector('#reel .reel-poster');
+    reelPoster.addEventListener('click', () => {
+      reelFrame.src = reelFrame.dataset.src;
+      reelFrame.hidden = false;
+      reelPoster.remove();
+      reelFrame.focus();
+    });
     function setReelPlaying(on) {
-      if (on && !reelFrame.src) { reelFrame.src = reelFrame.dataset.src; return; }
       if (on || !reelFrame.src) return;
       reelFrame.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: '' }), '*');
     }
@@ -2245,6 +2320,7 @@
 
     function applyTab(name, updateUrl) {
       if (!panels[name]) name = 'work';
+      delete document.documentElement.dataset.tab0;   // pre-render hint from <head> is no longer needed
       tabs.forEach((t) => {
         const on = t.dataset.tab === name;
         t.setAttribute('aria-selected', on);
@@ -2411,6 +2487,7 @@
     };
 
     const introQueue = [];
+    const introCards = [];   // cards waiting to be parked at the coarse mosaic
 
     document.querySelectorAll('.card-media').forEach((media) => {
       const template = media.dataset.fx && document.getElementById('fx-' + media.dataset.fx);
@@ -2443,8 +2520,10 @@
       media.addEventListener('focus', () => { if (media.matches(':focus-visible')) enter(); });
       media.addEventListener('blur', leave);
 
-      // Park at the coarse mosaic until it's this card's turn in the intro
-      if (build()) {
+      // Park at the coarse mosaic until it's this card's turn in the intro.
+      // (Done when the work tab is first shown; see startIntro below.)
+      introCards.push(() => {
+        if (media.dataset.intro === 'done' || !build()) return;
         anims.forEach((a) => { a.pause(); a.currentTime = PULSE_MS / 2; });
         media.dataset.intro = 'wait';
         introQueue.push({
@@ -2455,10 +2534,17 @@
             return anims[0].finished;
           },
         });
-      }
+      });
     });
 
-    (async () => {
+    // The intro (and building ~33k mosaic cells) only happens once the work tab is
+    // actually on screen, so opening the site straight to the reel or resume
+    // doesn't pay for it.
+    let introStarted = false;
+    async function startIntro() {
+      if (introStarted || document.body.dataset.tab !== 'work') return;
+      introStarted = true;
+      introCards.forEach((park) => park());
       await wait(400);
       for (const item of introQueue) {
         if (item.media.dataset.intro !== 'wait') continue;                       // already hovered
@@ -2466,7 +2552,9 @@
         await item.resolve(false).catch(() => {});
         await wait(INTRO_GAP_MS);
       }
-    })();
+    }
+    startIntro();
+    new MutationObserver(startIntro).observe(document.body, { attributes: true, attributeFilter: ['data-tab'] });
 
 
     /* ---- Reviews ticker ---------------------------------------------------------
