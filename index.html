@@ -757,6 +757,21 @@
       }
     }
 
+    /* Expand/collapse animation (driven by script): contents fade out, the box's
+   height glides to its new size, then the new contents fade in. */
+    .ticker-win,.ticker .mplus-box {
+      transition: opacity .18s ease;
+    }
+    .ticker.fading .ticker-win,.ticker.fading .mplus-box {
+      opacity: 0;
+    }
+    .ticker.resizing {
+      transition: height .5s cubic-bezier(.2,.7,.2,1);
+    }
+    .ticker:not(.open).resizing .ticker-win {
+      animation: tab-fade-in .4s ease .1s both;
+    }
+
     /* ---- Mahe+ (reviews paywall joke) -------------------------------------- */
 
     /* A streaming-service style upsell at the end of the expanded reviews, and the
@@ -2518,18 +2533,47 @@
     }, { passive: false });
     ticker.addEventListener('touchend', () => { touchX = null; held = false; }, { passive: true });
 
-    // Expand / collapse
-    function setOpen(next) {
-      if (next === open) return;
-      const heightBefore = ticker.offsetHeight;
+    // Expand / collapse, animated in three beats:
+    //   1. the current contents fade out (.fading),
+    //   2. the layout switches and the box's height glides from old to new,
+    //   3. the new contents fade in (list items stagger in one by one).
+    // When it's collapsed because it scrolled out of view, it switches instantly
+    // so nothing moves off screen.
+    let animating = false;
+    function applyOpen(next) {
       open = next;
       ticker.classList.toggle('open', open);
       toggle.setAttribute('aria-expanded', open);
-      // Collapsing while the list is above the viewport would make the page jump;
-      // shift the scroll position by the height that just disappeared.
-      if (!open && ticker.getBoundingClientRect().bottom < 0) {
-        window.scrollBy({ top: -(heightBefore - ticker.offsetHeight), behavior: 'instant' });
+    }
+    async function setOpen(next, animate = true) {
+      if (next === open || animating) return;
+      const heightBefore = ticker.offsetHeight;
+
+      if (!animate || reduceMotion) {
+        applyOpen(next);
+        // Collapsing while the list is above the viewport would make the page jump;
+        // shift the scroll position by the height that just disappeared.
+        if (!open && ticker.getBoundingClientRect().bottom < 0) {
+          window.scrollBy({ top: -(heightBefore - ticker.offsetHeight), behavior: 'instant' });
+        }
+        return;
       }
+
+      animating = true;
+      ticker.classList.add('fading');
+      await wait(180);
+      applyOpen(next);
+      const heightAfter = ticker.offsetHeight;
+      ticker.style.height = heightBefore + 'px';
+      ticker.style.overflow = 'hidden';
+      void ticker.offsetHeight;                       // lock in the starting height
+      ticker.classList.add('resizing');
+      ticker.classList.remove('fading');
+      ticker.style.height = heightAfter + 'px';
+      await wait(520);
+      ticker.classList.remove('resizing');
+      ticker.style.height = ticker.style.overflow = '';
+      animating = false;
     }
     toggle.addEventListener('click', () => setOpen(!open));
 
@@ -2539,7 +2583,7 @@
     mplus.querySelector('[data-close]').addEventListener('click', () => mplus.close());
     mplus.addEventListener('click', (e) => { if (e.target === mplus) mplus.close(); });   // backdrop
     mplus.querySelector('[data-go]').addEventListener('click', () => mplus.close());
-    new IntersectionObserver(([entry]) => { if (!entry.isIntersecting) setOpen(false); })
+    new IntersectionObserver(([entry]) => { if (!entry.isIntersecting) setOpen(false, false); })
       .observe(ticker);
 
 
