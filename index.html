@@ -31,7 +31,7 @@
   <title>Mahe Dewan — Technical Artist &amp; Virtual Production</title>
   <meta name="description" content="Work and resume of Mahe Dewan, Emmy Award-winning technical artist and virtual production specialist working in Unreal Engine.">
   <meta property="og:title" content="Mahe Dewan — Technical Artist &amp; Virtual Production">
-  <meta property="og:image" content="https://mahe-has-a.website/img/og.jpg">
+  <meta property="og:image" content="https://mahe-has-a.website/img/og-logo.jpg">
   <meta property="og:url" content="https://mahe-has-a.website/">
   <!-- Icons: browser tab, iOS home screen, Android home screen -->
   <link rel="icon" href="favicon.ico" sizes="any">
@@ -600,27 +600,28 @@
 
     /* ---- Reel -------------------------------------------------------------- */
 
-    /* Reel tab: the muted, looping YouTube embed fits to the height of the area
-   below the nav on every screen: always full height, 16:9 width, centered.
-   Wider screens get black on the sides; narrower ones (like upright phones)
-   crop the sides. --nav-h is measured by script. pointer-events:none means
-   visitors can't click into the player to pause or unmute it. */
+    /* Reel tab: a regular YouTube player (visitors press play, with sound,
+   controls, and fullscreen), centered on a dark stage that fills the area
+   below the nav. The player is as large as fits without cropping: limited by
+   the width on narrow screens and by the height on wide ones. --nav-h is
+   measured by script. */
     .reel-tab {
-      position: relative;
+      --pad: clamp(16px,3vw,40px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
       height: calc(100svh - var(--nav-h,60px));
+      padding: var(--pad);
       background: #000;
-      overflow: hidden;
     }
     .reel-tab iframe {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%,-50%);
+      display: block;
       border: 0;
-      pointer-events: none;
-      height: 100%;
-      width: auto;
+      border-radius: 6px;
       aspect-ratio: 16/9;
+      height: auto;
+      width: min(100%,calc((100svh - var(--nav-h,60px) - 2 * var(--pad)) * 16 / 9));
     }
     body[data-tab="reel"] .site-foot {
       display: none;
@@ -1826,14 +1827,14 @@
 
     <!-- ====================================================================
          REEL TAB
-         Full-screen, muted, looping reel. The player URL sits in data-src and
-         is only loaded the first time this tab opens. Controls, keyboard, and
-         fullscreen are disabled; enablejsapi lets the script pause it.
+         A regular YouTube player for the reel, centered on a dark stage. The
+         player URL sits in data-src and is only loaded the first time this tab
+         opens; enablejsapi lets the script pause it when you switch tabs.
          ==================================================================== -->
     <section id="reel" class="reel-tab" role="tabpanel" aria-labelledby="t-reel" hidden>
-      <iframe data-src="https://www.youtube-nocookie.com/embed/9_QFtA0gWY0?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=9_QFtA0gWY0&amp;controls=0&amp;disablekb=1&amp;fs=0&amp;iv_load_policy=3&amp;rel=0&amp;playsinline=1&amp;modestbranding=1&amp;enablejsapi=1"
-              title="Mahe Dewan reel (muted)" allow="autoplay; encrypted-media"
-              referrerpolicy="strict-origin-when-cross-origin" tabindex="-1"></iframe>
+      <iframe data-src="https://www.youtube-nocookie.com/embed/9_QFtA0gWY0?rel=0&amp;playsinline=1&amp;iv_load_policy=3&amp;enablejsapi=1"
+              title="Mahe Dewan reel" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+              referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     </section>
 
     <!-- ====================================================================
@@ -2067,14 +2068,14 @@
     };
     const tabFromHash = () => (panels[location.hash.slice(1)] ? location.hash.slice(1) : 'work');
 
-    // Reel: load the player the first time the tab opens, then pause/resume it
-    // through the YouTube iframe API so it never plays unseen in the background.
+    // Reel: load the player the first time the tab opens (so visitors who never
+    // open it don't download it). If it's playing when they switch tabs, pause it
+    // through the YouTube iframe API; it waits for them to press play again.
     const reelFrame = document.querySelector('#reel iframe');
     function setReelPlaying(on) {
       if (on && !reelFrame.src) { reelFrame.src = reelFrame.dataset.src; return; }
-      if (!reelFrame.src) return;
-      reelFrame.contentWindow.postMessage(
-        JSON.stringify({ event: 'command', func: on ? 'playVideo' : 'pauseVideo', args: '' }), '*');
+      if (on || !reelFrame.src) return;
+      reelFrame.contentWindow.postMessage(JSON.stringify({ event: 'command', func: 'pauseVideo', args: '' }), '*');
     }
 
     // The reel fills the viewport below the sticky nav, so keep its height in a CSS variable
