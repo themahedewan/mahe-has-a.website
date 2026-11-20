@@ -458,6 +458,17 @@
       opacity: 1;
       transform: none;
     }
+
+    /* On the work tab the hero already shows the big color logo, so the nav logo
+   also stays hidden until the hero scrolls away, then fades in with the name.
+   Other tabs keep the nav logo visible. */
+    .site-nav .logo-swap {
+      transition: opacity .35s ease,transform .35s ease;
+    }
+    body[data-tab="work"] .site-nav:not(.show-name) .logo-swap {
+      opacity: 0;
+      transform: translateY(4px);
+    }
     .mark-name {
       white-space: nowrap;
     }
@@ -575,6 +586,7 @@
     }
     .hero h1 span {
       display: block;
+      font-size: .9em;
     }
 
     /* The color logo stands in for "mahe" (its alt text keeps the heading readable
@@ -1134,9 +1146,37 @@
       justify-content: flex-end;
       gap: 6px;
       padding: 18px 18px 16px;
-      background: #0b0b0b;
-      color: #fff;
+      background: linear-gradient(-45deg,var(--c1),var(--c2),var(--c1),var(--c2));
+      background-size: 400% 400%;
+      animation: co-drift 16s ease infinite;
+      color: var(--fg);
       transition: transform .5s cubic-bezier(.2,.7,.2,1);
+    }
+
+    /* Each company card drifts slowly between its two colors (set inline as
+   --c1/--c2, with --fg as the readable text color). .shade lays a soft dark
+   scrim along the bottom, behind the text, for color pairs where neither white
+   nor black text reads well on both. */
+    @keyframes co-drift {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    .co-panel.shade::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top,rgba(0,0,0,.42),rgba(0,0,0,0) 65%);
+      pointer-events: none;
+    }
+    .co-panel>span {
+      position: relative;
     }
     .co-name {
       font-weight: 600;
@@ -1146,7 +1186,8 @@
     }
     .co-role {
       font-size: 13px;
-      color: #9a9a9a;
+      color: var(--fg);
+      opacity: .78;
     }
 
     /* Filtered view: the company card spans the whole row. The black panel takes
@@ -1429,6 +1470,9 @@
       * {
         transition: none!important;
       }
+      .co-panel {
+        animation: none;
+      }
       dialog.mplus-dialog[open],.ticker.open .mplus-box {
         animation: none;
       }
@@ -1709,7 +1753,7 @@
         <!-- Astucemedia: company summary card -->
         <article class="card co-card" data-group="astucemedia" data-company>
           <a class="card-media" href="#resume" data-go="resume" aria-label="Astucemedia on the resume tab">
-            <span class="co-panel" aria-hidden="true">
+            <span class="co-panel" aria-hidden="true" style="--c1:#262728;--c2:#212f44;--fg:#fff">
               <span class="co-name">Astucemedia</span>
               <span class="co-role">Virtual Production Lead (contract) · 2026–present</span>
             </span>
@@ -1725,7 +1769,7 @@
         <!-- Lucid: company summary card -->
         <article class="card co-card" data-group="lucid" data-company>
           <a class="card-media" href="#resume" data-go="resume" aria-label="Lucid on the resume tab">
-            <span class="co-panel" aria-hidden="true">
+            <span class="co-panel" aria-hidden="true" style="--c1:#3b85cd;--c2:#9e917e;--fg:#0b0b0b">
               <span class="co-name">Lucid</span>
               <span class="co-role">Pipeline Technical Director (contract) · 2025–2026</span>
             </span>
@@ -1870,7 +1914,7 @@
         <!-- disguise: company summary card -->
         <article class="card co-card" data-group="disguise" data-company>
           <a class="card-media" href="#resume" data-go="resume" aria-label="disguise on the resume tab">
-            <span class="co-panel" aria-hidden="true">
+            <span class="co-panel" aria-hidden="true" style="--c1:#ff6df0;--c2:#6bffdc;--fg:#0b0b0b">
               <span class="co-name">disguise</span>
               <span class="co-role">Lead Unreal Technical Artist · 2022–2025</span>
             </span>
@@ -2058,7 +2102,7 @@
         <!-- Silver Spoon: company summary card -->
         <article class="card co-card" data-group="silver" data-company>
           <a class="card-media" href="#resume" data-go="resume" aria-label="Silver Spoon on the resume tab">
-            <span class="co-panel" aria-hidden="true">
+            <span class="co-panel shade" aria-hidden="true" style="--c1:#ac2f3e;--c2:#b792d6;--fg:#fff">
               <span class="co-name">Silver Spoon</span>
               <span class="co-role">Virtual Production Technical Director · 2019–2022</span>
             </span>
