@@ -353,6 +353,19 @@
       flex: none;
     }
 
+    /* The name beside the logo stays hidden while the page's own big name is on
+   screen, and fades in once that has scrolled up under the nav (script adds
+   .show-name). The reel tab has no big name, so only the logo shows there. */
+    .mark-name {
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity .35s ease,transform .35s ease;
+    }
+    .site-nav.show-name .mark-name {
+      opacity: 1;
+      transform: none;
+    }
+
     /* The resume tab uses the soft grayscale logo; the other tabs use the color one.
    The hidden variant is lazy-loaded, so it only downloads when first shown. */
     .logo-mono {
@@ -1191,7 +1204,7 @@
        ====================================================================== -->
   <nav class="site-nav" aria-label="Site">
     <div class="in">
-      <a class="mark" href="#" data-go="work"><img class="logo logo-color" src="img/logo.webp" alt="" width="34" height="34"><img class="logo logo-mono" src="img/logo-mono.webp" alt="" width="34" height="34" loading="lazy">mahe dewan</a>
+      <a class="mark" href="#" data-go="work"><img class="logo logo-color" src="img/logo.webp" alt="" width="34" height="34"><img class="logo logo-mono" src="img/logo-mono.webp" alt="" width="34" height="34" loading="lazy"><span class="mark-name">mahe dewan</span></a>
       <div class="tabs" role="tablist" aria-label="Sections">
         <button class="tab" role="tab" id="t-work" data-tab="work" aria-controls="work" aria-selected="true">work</button>
         <button class="tab" role="tab" id="t-reel" data-tab="reel" aria-controls="reel" aria-selected="false" tabindex="-1">reel</button>
@@ -1936,6 +1949,26 @@
       a.addEventListener('click', (e) => { e.preventDefault(); showTab(a.dataset.go, true); }));
     showTab(tabFromHash(), false);
     addEventListener('hashchange', () => showTab(tabFromHash(), false));
+
+
+    /* ---- Name in the nav -------------------------------------------------------
+       Watches the big name at the top of the work tab and the resume tab. While
+       the active tab's big name is visible (below the nav), the small one in the
+       nav is hidden; once it scrolls out of view, the nav name fades in. */
+    {
+      const bigNames = { work: document.querySelector('#work .hero h1'), resume: document.querySelector('#resume .name') };
+      const onScreen = new Map();
+      const update = () => {
+        const big = bigNames[document.body.dataset.tab];
+        nav.classList.toggle('show-name', !!big && onScreen.get(big) === false);
+      };
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => onScreen.set(e.target, e.isIntersecting));
+        update();
+      }, { rootMargin: `-${nav.offsetHeight}px 0px 0px 0px` });
+      Object.values(bigNames).forEach((el) => el && io.observe(el));
+      new MutationObserver(update).observe(document.body, { attributes: true, attributeFilter: ['data-tab'] });
+    }
 
 
     /* ---- Rotating role line -----------------------------------------------------
