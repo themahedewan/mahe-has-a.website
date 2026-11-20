@@ -1098,6 +1098,10 @@
     }
     .btn {
       display: inline-block;
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      font: inherit;
       margin-top: 16px;
       background: var(--ink);
       color: var(--bg);
@@ -1973,9 +1977,8 @@
           <p>Or take a look at my <a href="#resume" data-go="resume">expanded resume</a>.</p>
         </div>
         <div>
-          <h2>wanna talk?</h2>
-          <p>About my work, working with me, what works, and anything else.</p>
-          <a class="btn" href="mailto:mahedewan@gmail.com">this button will help</a>
+          <h2>Want More Mahe?</h2>
+          <button type="button" class="btn" data-mplus>Subscribe to <span class="mplus">Mahe<b>+</b></span></button>
         </div>
       </div>
     </section>
@@ -2577,9 +2580,10 @@
     }
     toggle.addEventListener('click', () => setOpen(!open));
 
-    // Mahe+: the Subscribe button opens the (very exclusive) pop-up
+    // Mahe+: every Subscribe button (reviews banner, closing section) opens the
+    // (very exclusive) pop-up
     const mplus = document.getElementById('mplus');
-    document.querySelector('[data-mplus]').addEventListener('click', () => mplus.showModal());
+    document.querySelectorAll('[data-mplus]').forEach((b) => b.addEventListener('click', () => mplus.showModal()));
     mplus.querySelector('[data-close]').addEventListener('click', () => mplus.close());
     mplus.addEventListener('click', (e) => { if (e.target === mplus) mplus.close(); });   // backdrop
     mplus.querySelector('[data-go]').addEventListener('click', () => mplus.close());
