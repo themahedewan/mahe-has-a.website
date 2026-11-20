@@ -325,7 +325,7 @@
    Two masks are combined (intersected): one feathers it out toward the top
    of the screen so the color rises from the bottom, the other feathers the
    left and right edges a little beyond the card column (reaching out an extra
-   15% of the screen width on each side) so the color sits mostly behind the
+   35% of the screen width on each side) so the color sits mostly behind the
    cards. On phones (single column) there's no side feather,
    only the top one. Scrolling back up to the summary fades it all away.
    Browsers with WebGL get the shader version (see "Background shader" in the
@@ -341,7 +341,7 @@
       opacity: 0;
       transition: opacity .9s ease;
       --fade-top: linear-gradient(to bottom,transparent 15%,rgba(0,0,0,.35) 50%,#000 90%);
-      --fade-sides: linear-gradient(to right,transparent max(0px,calc(35% - 760px)),#000 max(6%,calc(35% - 540px)),#000 min(94%,calc(65% + 540px)),transparent min(100%,calc(65% + 760px)));
+      --fade-sides: linear-gradient(to right,transparent max(0px,calc(15% - 760px)),#000 max(3%,calc(15% - 540px)),#000 min(97%,calc(85% + 540px)),transparent min(100%,calc(85% + 760px)));
       -webkit-mask-image: var(--fade-top),var(--fade-sides);
       -webkit-mask-composite: source-in;
       mask-image: var(--fade-top),var(--fade-sides);
@@ -2439,8 +2439,9 @@
          a 25s ease-in-out loop.
        - Alpha: the top feather (clear at the top 15%, full by 90% down) times the
          side feather (desktop only: fades out a little beyond the card column).
-         Both feathers are pushed around by two layers of slow, large-scale noise,
-         so the edges billow instead of being straight lines.
+         Both feathers are pushed around by slow, large-scale noise, strongly
+         enough that the edges billow deep into the screen, and a third noise layer
+         opens soft gaps that drift through the middle. All of it moves slowly.
        Renders at half resolution (it's all soft shapes) and only while showing.
        With reduced motion, it draws one still frame. */
     function createBackgroundShader(host) {
@@ -2484,17 +2485,21 @@
           float n2 = fbm(q * 0.9 + vec2(41.3 - uTime * 0.017, 7.7 + uTime * 0.011)) - 0.5;
 
           // Top feather, its edge displaced by noise
-          float y = uv.y + n1 * 0.32;
+          float y = uv.y + n1 * 0.48;
           float top = y < 0.5 ? 0.35 * ramp(y, 0.15, 0.5) : 0.35 + 0.65 * ramp(y, 0.5, 0.9);
 
           // Side feather (desktop), same stops as the CSS version, displaced by noise
-          float x = uv.x * uCss.x + n2 * 0.22 * uCss.x;
+          float x = uv.x * uCss.x + n2 * 0.36 * uCss.x;
           float W = uCss.x;
-          float l0 = max(0.0, 0.35 * W - 760.0), l1 = max(0.06 * W, 0.35 * W - 540.0);
-          float r1 = min(0.94 * W, 0.65 * W + 540.0), r0 = min(W, 0.65 * W + 760.0);
+          float l0 = max(0.0, 0.15 * W - 760.0), l1 = max(0.03 * W, 0.15 * W - 540.0);
+          float r1 = min(0.97 * W, 0.85 * W + 540.0), r0 = min(W, 0.85 * W + 760.0);
           float sides = mix(1.0, ramp(x, l0, l1) * (1.0 - ramp(x, r1, r0)), uSides);
 
-          float a = top * sides;
+          // Slow noise also opens soft gaps that drift through the middle
+          float n3 = fbm(q * 0.75 + vec2(-uTime * 0.012, 23.4 + uTime * 0.016));
+          float holes = mix(1.0, smoothstep(0.18, 0.48, n3), 0.8);
+
+          float a = top * sides * holes;
           gl_FragColor = vec4(col * a, a);
         }`;
 
