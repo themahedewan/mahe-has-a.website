@@ -321,10 +321,9 @@
 
     /* An animated gradient (after Manuel Pinto's "Pure CSS Gradient Background
    Animation", slowed to a 25s loop) that fades in slowly behind the content
-   once you've scrolled a quarter of the way down the work tab, past the
-   header and summary. A mask feathers it out toward the top of the screen,
-   so the color rises from the bottom. Scrolling back up above that point
-   fades the whole thing away.
+   once the header and summary have scrolled out of view on the work tab.
+   A mask feathers it out toward the top of the screen, so the color rises
+   from the bottom. Scrolling back up to the summary fades it all away.
    Instead of animating background-position (which repaints the full screen
    every frame), the gradient is painted once on a 4x-size layer and that
    layer is slid around with transform, which the GPU handles cheaply. The
@@ -2349,17 +2348,21 @@
 
 
     /* ---- Scroll background ------------------------------------------------------
-       On the work tab, scrolling past a quarter of the page (BG_START) turns the
-       gradient on, and it fades in slowly. Scrolling back above that point, or
-       leaving the tab, fades it out. */
+       On the work tab, the gradient turns on (fading in slowly) as soon as the
+       header and summary (.hero) have scrolled up out of view under the nav, the
+       same point on every screen size. Scrolling back up until any of the summary
+       shows again, or leaving the tab, fades it out. */
     {
-      const BG_START = 0.25;
       const bg = document.querySelector('.bg-fx');
-      const progress = () => scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight);
+      const hero = document.querySelector('#work .hero');
+      let heroGone = false;
       const set = (on) => { bg.classList.toggle('on', on); document.body.classList.toggle('bg-on', on); };
-      const update = () => set(document.body.dataset.tab === 'work' && progress() >= BG_START);
-      addEventListener('scroll', update, { passive: true });
-      addEventListener('resize', update);
+      const update = () => set(document.body.dataset.tab === 'work' && heroGone);
+      new IntersectionObserver(([entry]) => {
+        // Gone = not visible below the nav AND above the viewport (not just a hidden tab)
+        heroGone = !entry.isIntersecting && entry.boundingClientRect.bottom <= nav.offsetHeight;
+        update();
+      }, { rootMargin: `-${nav.offsetHeight}px 0px 0px 0px` }).observe(hero);
       new MutationObserver(update).observe(document.body, { attributes: true, attributeFilter: ['data-tab'] });
     }
 
