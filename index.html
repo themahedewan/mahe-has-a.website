@@ -352,6 +352,18 @@
       display: block;
       flex: none;
     }
+
+    /* The resume tab uses the soft grayscale logo; the other tabs use the color one.
+   The hidden variant is lazy-loaded, so it only downloads when first shown. */
+    .logo-mono {
+      display: none;
+    }
+    body[data-tab="resume"] .logo-color {
+      display: none;
+    }
+    body[data-tab="resume"] .logo-mono {
+      display: block;
+    }
     .site-nav .logo {
       width: 34px;
       height: 34px;
@@ -1179,7 +1191,7 @@
        ====================================================================== -->
   <nav class="site-nav" aria-label="Site">
     <div class="in">
-      <a class="mark" href="#" data-go="work"><img class="logo" src="img/logo.webp" alt="" width="34" height="34">mahe dewan</a>
+      <a class="mark" href="#" data-go="work"><img class="logo logo-color" src="img/logo.webp" alt="" width="34" height="34"><img class="logo logo-mono" src="img/logo-mono.webp" alt="" width="34" height="34" loading="lazy">mahe dewan</a>
       <div class="tabs" role="tablist" aria-label="Sections">
         <button class="tab" role="tab" id="t-work" data-tab="work" aria-controls="work" aria-selected="true">work</button>
         <button class="tab" role="tab" id="t-reel" data-tab="reel" aria-controls="reel" aria-selected="false" tabindex="-1">reel</button>
@@ -1829,7 +1841,8 @@
        FOOTER
        ====================================================================== -->
   <footer class="site-foot">
-    <img class="logo" src="img/logo.webp" alt="Mahe Dewan logo" width="28" height="28" loading="lazy">
+    <img class="logo logo-color" src="img/logo.webp" alt="Mahe Dewan logo" width="28" height="28" loading="lazy">
+    <img class="logo logo-mono" src="img/logo-mono.webp" alt="Mahe Dewan logo" width="28" height="28" loading="lazy">
     <a href="https://www.linkedin.com/in/mahedewan/" target="_blank" rel="noopener">linkedin</a>
     <a href="https://instagr.am/mahedewan" target="_blank" rel="noopener">instagram</a>
     <a href="https://www.flickr.com/photos/201932590@N05/" target="_blank" rel="noopener">photography</a>
