@@ -451,6 +451,16 @@
       display: none;
     }
 
+    /* Portrait screens: filling would crop most of a 16:9 frame, so show the
+   whole frame full-width instead, centered with black above and below. */
+    @media (orientation:portrait) {
+      .reel-tab iframe {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16/9;
+      }
+    }
+
     /* ---- Reviews ticker ---------------------------------------------------- */
 
     /* The track holds two identical lists side by side. Script slides the track
