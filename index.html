@@ -322,8 +322,12 @@
     /* An animated gradient (after Manuel Pinto's "Pure CSS Gradient Background
    Animation", slowed to a 25s loop) that fades in slowly behind the content
    once the header and summary have scrolled out of view on the work tab.
-   A mask feathers it out toward the top of the screen, so the color rises
-   from the bottom. Scrolling back up to the summary fades it all away.
+   Two masks are combined (intersected): one feathers it out toward the top
+   of the screen so the color rises from the bottom, the other feathers the
+   left and right edges a little beyond the card column (reaching out an extra
+   15% of the screen width on each side) so the color sits mostly behind the
+   cards. On phones (single column) there's no side feather,
+   only the top one. Scrolling back up to the summary fades it all away.
    Instead of animating background-position (which repaints the full screen
    every frame), the gradient is painted once on a 4x-size layer and that
    layer is slid around with transform, which the GPU handles cheaply. The
@@ -336,8 +340,12 @@
       pointer-events: none;
       opacity: 0;
       transition: opacity .9s ease;
-      -webkit-mask-image: linear-gradient(to bottom,transparent 15%,rgba(0,0,0,.35) 50%,#000 90%);
-      mask-image: linear-gradient(to bottom,transparent 15%,rgba(0,0,0,.35) 50%,#000 90%);
+      --fade-top: linear-gradient(to bottom,transparent 15%,rgba(0,0,0,.35) 50%,#000 90%);
+      --fade-sides: linear-gradient(to right,transparent max(0px,calc(35% - 760px)),#000 max(6%,calc(35% - 540px)),#000 min(94%,calc(65% + 540px)),transparent min(100%,calc(65% + 760px)));
+      -webkit-mask-image: var(--fade-top),var(--fade-sides);
+      -webkit-mask-composite: source-in;
+      mask-image: var(--fade-top),var(--fade-sides);
+      mask-composite: intersect;
     }
     .bg-fx.on {
       opacity: 1;
@@ -430,6 +438,9 @@
     .site-nav.show-name .mark-name {
       opacity: 1;
       transform: none;
+    }
+    .mark-name {
+      white-space: nowrap;
     }
 
     /* Logo swap: the color and grayscale logos are stacked in .logo-swap.
@@ -1088,7 +1099,36 @@
         justify-self: start;
       }
     }
+    @media (max-width:360px) {
+      .site-nav .in {
+        gap: 10px;
+      }
+      .tab {
+        padding: 6px 7px;
+      }
+      .mark-name {
+        display: none;
+      }
+    }
     @media (max-width:600px) {
+      .site-nav .mark {
+        gap: 8px;
+        font-size: 15px;
+      }
+      .site-nav .logo-swap {
+        width: 30px;
+        height: 30px;
+      }
+      .tabs {
+        gap: 0;
+      }
+      .tab {
+        padding: 6px 10px;
+        font-size: 15px;
+      }
+      .bg-fx {
+        --fade-sides: linear-gradient(#000,#000);
+      }
       .site-nav .in,.work,.site-foot,.resume-tools {
         padding-left: 16px;
         padding-right: 16px;
