@@ -757,6 +757,138 @@
       }
     }
 
+    /* ---- Mahe+ (reviews paywall joke) -------------------------------------- */
+
+    /* A streaming-service style upsell at the end of the expanded reviews, and the
+   pop-up its Subscribe button opens. "+" uses the background gradient colors. */
+    .mplus b {
+      font-weight: 700;
+      background: linear-gradient(90deg,#ee7752,#e73c7e,#23a6d5,#23d5ab);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .mplus-box {
+      display: none;
+    }
+    .ticker.open .mplus-box {
+      display: flex;
+      flex-basis: 100%;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px 24px;
+      flex-wrap: wrap;
+      padding: 20px 22px;
+      margin-top: 6px;
+      background: #0b0b0b;
+      color: #fff;
+      border-radius: 8px;
+      animation: review-in .4s cubic-bezier(.2,.7,.2,1) .35s both;
+    }
+    .mplus-box p {
+      margin: 0;
+      font-size: clamp(16px,1.8vw,19px);
+      font-weight: 500;
+    }
+    .mplus-box .mplus {
+      font-weight: 700;
+    }
+    .mplus-btn {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      background: #fff;
+      color: #000;
+      padding: 9px 18px;
+      border-radius: 999px;
+    }
+    .mplus-btn:hover {
+      opacity: .88;
+    }
+    dialog.mplus-dialog {
+      border: 0;
+      border-radius: 14px;
+      padding: 44px 40px 36px;
+      max-width: min(520px,92vw);
+      text-align: center;
+      color: var(--ink);
+      background: var(--bg);
+      box-shadow: 0 30px 80px rgba(0,0,0,.35);
+    }
+    dialog.mplus-dialog[open] {
+      animation: mplus-in .35s cubic-bezier(.2,.7,.2,1);
+    }
+    dialog.mplus-dialog::backdrop {
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(3px);
+    }
+    @keyframes mplus-in {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(.97);
+      }
+    }
+    .mplus-kicker {
+      margin: 0 0 6px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .mplus-dialog h2 {
+      margin: 0;
+      font-weight: 600;
+      font-size: clamp(28px,5vw,40px);
+      line-height: 1.05;
+      letter-spacing: -.01em;
+      text-wrap: balance;
+    }
+    .mplus-sub {
+      margin: 14px auto 0;
+      max-width: 24em;
+      color: #555;
+      font-size: 15px;
+    }
+    .mplus-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+    .mplus-actions .btn {
+      margin-top: 0;
+    }
+    .mplus-alt {
+      font-size: 15px;
+    }
+    .mplus-x {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      appearance: none;
+      border: 0;
+      background: none;
+      font: inherit;
+      font-size: 26px;
+      line-height: 1;
+      color: #888;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+    .mplus-x:hover {
+      color: var(--ink);
+    }
+    .mplus-btn:focus-visible,
+    .mplus-x:focus-visible,
+    .mplus-alt:focus-visible {
+      outline: 2px solid var(--link);
+      outline-offset: 3px;
+    }
+
     /* ---- Work grid + filters ----------------------------------------------- */
     .proj-head {
       display: flex;
@@ -1174,6 +1306,9 @@
       * {
         transition: none!important;
       }
+      dialog.mplus-dialog[open],.ticker.open .mplus-box {
+        animation: none;
+      }
       .bg-fx-inner {
         animation: none;
         transform: translate(-37.5%,-37.5%);
@@ -1407,6 +1542,11 @@
             </ul>
             <ul class="ticker-set" aria-hidden="true"></ul>
           </div>
+        </div>
+        <!-- Mahe+ "paywall" (a joke): only shown in the expanded list -->
+        <div class="mplus-box">
+          <p>Want to get the full details on the reviewers? Subscribe to <span class="mplus">Mahe<b>+</b></span></p>
+          <button type="button" class="mplus-btn" data-mplus>Subscribe</button>
         </div>
       </section>
 
@@ -1815,6 +1955,7 @@
         <div>
           <h2>and lots more!</h2>
           <p>Reach out for stories from sets, LED walls, VR escapades, and other cool things.</p>
+          <p>Or take a look at my <a href="#resume" data-go="resume">expanded resume</a>.</p>
         </div>
         <div>
           <h2>wanna talk?</h2>
@@ -2021,10 +2162,21 @@
     </span>
     <a href="https://www.linkedin.com/in/mahedewan/" target="_blank" rel="noopener">linkedin</a>
     <a href="https://instagr.am/mahedewan" target="_blank" rel="noopener">instagram</a>
-    <a href="https://www.flickr.com/photos/201932590@N05/" target="_blank" rel="noopener">photography</a>
     <a href="mailto:mahedewan@gmail.com">mahedewan@gmail.com</a>
     <span class="c">© 2026 Mahe Dewan</span>
   </footer>
+
+  <!-- Mahe+ pop-up, opened by the Subscribe button in the expanded reviews -->
+  <dialog class="mplus-dialog" id="mplus" aria-labelledby="mplus-title">
+    <button type="button" class="mplus-x" data-close aria-label="Close">×</button>
+    <p class="mplus-kicker"><span class="mplus">Mahe<b>+</b></span></p>
+    <h2 id="mplus-title">Get Mahe+ By Hiring Me!</h2>
+    <p class="mplus-sub">Includes unlimited access to the reviewers, the work, and the guy himself.</p>
+    <div class="mplus-actions">
+      <a class="btn" href="mailto:mahedewan@gmail.com?subject=Mahe%2B">email me</a>
+      <a class="mplus-alt" href="#resume" data-go="resume">see the resume →</a>
+    </div>
+  </dialog>
 
   <!-- Video lightbox (filled in by script when a video card is clicked) -->
   <dialog class="lb" id="lb" aria-label="Video player">
@@ -2380,6 +2532,13 @@
       }
     }
     toggle.addEventListener('click', () => setOpen(!open));
+
+    // Mahe+: the Subscribe button opens the (very exclusive) pop-up
+    const mplus = document.getElementById('mplus');
+    document.querySelector('[data-mplus]').addEventListener('click', () => mplus.showModal());
+    mplus.querySelector('[data-close]').addEventListener('click', () => mplus.close());
+    mplus.addEventListener('click', (e) => { if (e.target === mplus) mplus.close(); });   // backdrop
+    mplus.querySelector('[data-go]').addEventListener('click', () => mplus.close());
     new IntersectionObserver(([entry]) => { if (!entry.isIntersecting) setOpen(false); })
       .observe(ticker);
 
