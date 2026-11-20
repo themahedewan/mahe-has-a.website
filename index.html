@@ -29,7 +29,7 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <!-- Opening #reel or #resume directly: mark it before anything renders, so the
        work tab (and its images) never starts loading in the background. -->
-  <script>if (/^#(reel|resume)$/.test(location.hash)) document.documentElement.dataset.tab0 = location.hash.slice(1);</script>
+  <script>if (/^#(resume)$/.test(location.hash)) document.documentElement.dataset.tab0 = location.hash.slice(1);</script>
   <title>Mahe Dewan — Technical Artist &amp; Virtual Production</title>
   <meta name="description" content="Work and resume of Mahe Dewan, Emmy Award-winning technical artist and virtual production specialist working in Unreal Engine.">
   <meta property="og:title" content="Mahe Dewan — Technical Artist &amp; Virtual Production">
@@ -315,6 +315,8 @@
   <style>
     /* ==========================================================================
    SITE STYLES
+   Buttons, tabs, and labels use rounded rectangles (8px corners; 6px for the
+   small labels on cards) rather than pills.
    Colors, type, and base element styles (--ink, --mute, --line, ...) are
    defined in the RESUME STYLES block above, so both tabs share one palette.
    ========================================================================== */
@@ -515,7 +517,7 @@
       font-weight: 400;
       color: var(--mute);
       padding: 6px 12px;
-      border-radius: 999px;
+      border-radius: 8px;
       cursor: pointer;
     }
     .tab:hover {
@@ -679,7 +681,7 @@
       font-size: 16px;
       font-weight: 600;
       padding: 12px 22px 12px 18px;
-      border-radius: 999px;
+      border-radius: 8px;
       box-shadow: 0 8px 30px rgba(0,0,0,.35);
       transition: transform .2s;
     }
@@ -903,7 +905,7 @@
       background: #fff;
       color: #000;
       padding: 9px 18px;
-      border-radius: 999px;
+      border-radius: 8px;
     }
     .mplus-btn:hover {
       opacity: .88;
@@ -1017,7 +1019,7 @@
       background: none;
       color: var(--ink);
       padding: 5px 12px;
-      border-radius: 999px;
+      border-radius: 8px;
       cursor: pointer;
     }
     .filters button[aria-pressed="true"] {
@@ -1082,7 +1084,7 @@
       font-size: 13px;
       font-weight: 500;
       padding: 4px 10px;
-      border-radius: 999px;
+      border-radius: 6px;
       opacity: 0;
       transform: translateY(4px);
       transition: opacity .2s,transform .2s;
@@ -1097,7 +1099,7 @@
       font-size: 12px;
       font-weight: 500;
       padding: 3px 9px;
-      border-radius: 999px;
+      border-radius: 6px;
     }
     .card-media:hover .cta,.card-media:focus-visible .cta {
       opacity: 1;
@@ -1243,7 +1245,7 @@
       color: var(--bg);
       text-decoration: none;
       padding: 10px 18px;
-      border-radius: 999px;
+      border-radius: 8px;
       font-weight: 500;
     }
     .btn:hover {
@@ -1293,7 +1295,7 @@
       font-size: 14px;
       border: 1px solid var(--ink);
       padding: 6px 14px;
-      border-radius: 999px;
+      border-radius: 8px;
       text-decoration: none;
       color: var(--ink);
       display: inline-flex;
@@ -1371,7 +1373,7 @@
       font: inherit;
       font-size: 14px;
       padding: 4px 12px;
-      border-radius: 999px;
+      border-radius: 8px;
       cursor: pointer;
     }
 
@@ -1679,7 +1681,6 @@
       <a class="mark" href="#" data-go="work"><span class="logo-swap"><img class="logo logo-color" src="img/logo.webp" alt="" width="34" height="34"><img class="logo logo-mono" src="img/logo-mono.webp" alt="" width="34" height="34"></span><span class="mark-name">mahe dewan</span></a>
       <div class="tabs" role="tablist" aria-label="Sections">
         <button class="tab" role="tab" id="t-work" data-tab="work" aria-controls="work" aria-selected="true">work</button>
-        <button class="tab" role="tab" id="t-reel" data-tab="reel" aria-controls="reel" aria-selected="false" tabindex="-1">reel</button>
         <button class="tab" role="tab" id="t-resume" data-tab="resume" aria-controls="resume" aria-selected="false" tabindex="-1">resume</button>
       </div>
     </div>
@@ -2384,7 +2385,7 @@
     const tabs = [...document.querySelectorAll('.tab')];
     const panels = {
       work: document.getElementById('work'),
-      reel: document.getElementById('reel'),
+      reel: document.getElementById('t-reel') && document.getElementById('reel'),   // only when the reel tab is shown
       resume: document.getElementById('resume'),
     };
     const tabFromHash = () => (panels[location.hash.slice(1)] ? location.hash.slice(1) : 'work');
@@ -2420,7 +2421,7 @@
         t.setAttribute('aria-selected', on);
         t.tabIndex = on ? 0 : -1;
       });
-      Object.entries(panels).forEach(([key, panel]) => (panel.hidden = key !== name));
+      Object.entries(panels).forEach(([key, panel]) => panel && (panel.hidden = key !== name));
       document.getElementById('resume-tools').hidden = name !== 'resume';
       document.body.dataset.tab = name;
       setReelPlaying(name === 'reel');
