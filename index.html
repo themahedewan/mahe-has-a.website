@@ -2,7 +2,8 @@
 <!--
   Mahe Dewan · work + resume
   ==========================
-  One page plus its img/ folder (project stills and the link-preview image).
+  One page plus its img/ folder (project stills, logo, icons, link-preview
+  image), favicon.ico, and site.webmanifest.
   Everything else, fonts and PDFs included, is inside this file.
 
   How this file is organized
@@ -32,6 +33,11 @@
   <meta property="og:title" content="Mahe Dewan — Technical Artist &amp; Virtual Production">
   <meta property="og:image" content="https://mahe-has-a.website/img/og.jpg">
   <meta property="og:url" content="https://mahe-has-a.website/">
+  <!-- Icons: browser tab, iOS home screen, Android home screen -->
+  <link rel="icon" href="favicon.ico" sizes="any">
+  <link rel="icon" href="img/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
   <meta name="twitter:card" content="summary_large_image">
 
   <style>
@@ -338,6 +344,18 @@
       text-decoration: none;
       margin-right: auto;
       letter-spacing: -.01em;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo {
+      display: block;
+      flex: none;
+    }
+    .site-nav .logo {
+      width: 34px;
+      height: 34px;
+      margin: -4px 0;
     }
     .tabs {
       display: flex;
@@ -818,6 +836,14 @@
     .site-foot .c {
       margin-left: auto;
     }
+    .site-foot .logo {
+      width: 28px;
+      height: 28px;
+      margin-right: 4px;
+    }
+    .site-foot {
+      align-items: center;
+    }
 
     /* ---- Resume tab: download buttons -------------------------------------- */
     .resume-tools {
@@ -1153,7 +1179,7 @@
        ====================================================================== -->
   <nav class="site-nav" aria-label="Site">
     <div class="in">
-      <a class="mark" href="#" data-go="work">mahe dewan</a>
+      <a class="mark" href="#" data-go="work"><img class="logo" src="img/logo.webp" alt="" width="34" height="34">mahe dewan</a>
       <div class="tabs" role="tablist" aria-label="Sections">
         <button class="tab" role="tab" id="t-work" data-tab="work" aria-controls="work" aria-selected="true">work</button>
         <button class="tab" role="tab" id="t-reel" data-tab="reel" aria-controls="reel" aria-selected="false" tabindex="-1">reel</button>
@@ -1803,6 +1829,7 @@
        FOOTER
        ====================================================================== -->
   <footer class="site-foot">
+    <img class="logo" src="img/logo.webp" alt="Mahe Dewan logo" width="28" height="28" loading="lazy">
     <a href="https://www.linkedin.com/in/mahedewan/" target="_blank" rel="noopener">linkedin</a>
     <a href="https://instagr.am/mahedewan" target="_blank" rel="noopener">instagram</a>
     <a href="https://www.flickr.com/photos/201932590@N05/" target="_blank" rel="noopener">photography</a>
