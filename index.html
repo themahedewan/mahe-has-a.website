@@ -600,11 +600,11 @@
 
     /* ---- Reel -------------------------------------------------------------- */
 
-    /* Reel tab: the muted, looping YouTube embed fills everything below the nav.
-   The iframe is sized like object-fit:cover (at least as wide AND as tall as
-   the area, keeping 16:9) and centered, so there are no black bars; the
-   overflow is cropped. --nav-h is measured by script. pointer-events:none
-   means visitors can't click into the player to pause or unmute it. */
+    /* Reel tab: the muted, looping YouTube embed fits to the height of the area
+   below the nav on every screen: always full height, 16:9 width, centered.
+   Wider screens get black on the sides; narrower ones (like upright phones)
+   crop the sides. --nav-h is measured by script. pointer-events:none means
+   visitors can't click into the player to pause or unmute it. */
     .reel-tab {
       position: relative;
       height: calc(100svh - var(--nav-h,60px));
@@ -618,21 +618,12 @@
       transform: translate(-50%,-50%);
       border: 0;
       pointer-events: none;
-      width: max(100%,calc((100svh - var(--nav-h,60px)) * 16 / 9));
-      height: max(100%,calc(100vw * 9 / 16));
+      height: 100%;
+      width: auto;
+      aspect-ratio: 16/9;
     }
     body[data-tab="reel"] .site-foot {
       display: none;
-    }
-
-    /* Portrait screens: filling would crop most of a 16:9 frame, so show the
-   whole frame full-width instead, centered with black above and below. */
-    @media (orientation:portrait) {
-      .reel-tab iframe {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 16/9;
-      }
     }
 
     /* ---- Reviews ticker ---------------------------------------------------- */
