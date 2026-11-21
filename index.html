@@ -586,18 +586,55 @@
       line-height: .88;
       letter-spacing: -.02em;
     }
-    .hero h1 span {
+    .hero h1 .last {
       display: block;
       font-size: .81em;
     }
 
-    /* The color logo stands in for "mahe" (its alt text keeps the heading readable
-   as "mahe dewan"); it sits just above "dewan". */
+    /* First name: alternates between the color logo and the word "mahe", in step
+   with the rotating title below and with the same fade-and-drop. The slot
+   keeps the logo's height either way, so nothing below it moves; the text
+   sits at the bottom, just above "dewan". Screen readers hear "mahe dewan"
+   once (from .sr-only); the alternating slot is hidden from them. */
+    .name-swap {
+      position: relative;
+      display: block;
+      height: 2.42em;
+      margin: 0 0 .04em -.1em;
+    }
+    .name-swap>* {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      transition: opacity .35s,transform .35s;
+    }
     .hero-logo {
       display: block;
       width: auto;
-      height: 2.42em;
-      margin: 0 0 .04em -.1em;
+      height: 100%;
+    }
+    .name-text {
+      left: .1em;
+      font-size: .81em;
+      line-height: .88;
+      bottom: .02em;
+    }
+    .name-swap.out>* {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    .name-swap[data-show="logo"] .name-text,
+    .name-swap[data-show="text"] .hero-logo {
+      visibility: hidden;
+      opacity: 0;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
     }
     .rotor {
       margin: 18px 0 0;
@@ -1696,7 +1733,7 @@
       <!-- Hero: name and rotating role, summary (same copy as the resume) -->
       <div class="hero">
         <div>
-          <h1><img class="hero-logo" src="img/logo-hero.webp" alt="mahe" width="640" height="640" fetchpriority="high"><span>dewan</span></h1>
+          <h1><span class="name-swap" data-show="logo" aria-hidden="true"><img class="hero-logo" src="img/logo-hero.webp" alt="" width="640" height="640" fetchpriority="high"><span class="name-text">mahe</span></span><span class="sr-only">mahe </span><span class="last">dewan</span></h1>
           <p class="rotor" aria-label="technical artist, virtual production specialist, pretty cool guy"><span class="w" aria-hidden="true">technical artist</span></p>
         </div>
         <p class="about">Emmy Award-winning technical artist and creative technologist with 10+ years of Unreal Engine experience across real-time 3D, virtual production, motion capture, video games, broadcast, and AR graphics. Has led small teams of artists and developers, established pipelines, and show-ran live productions for clients including CBS Sports, CBS News, NBC, Netflix, and Disney. Actively mentoring and teaching emerging artists, developers, and technologists.</p>
@@ -2481,19 +2518,24 @@
     }
 
 
-    /* ---- Rotating role line -----------------------------------------------------
+    /* ---- Rotating role line + first name -----------------------------------------
        Fades the word out, swaps it, fades it back in. Screen readers get all three
-       from the aria-label instead. */
+       from the aria-label instead. On the same beat, the first name switches
+       between the logo and the word "mahe". With reduced motion, the logo stays. */
     const roles = ['technical artist', 'virtual production specialist', 'pretty cool guy'];
     const roleEl = document.querySelector('.rotor .w');
     let roleIndex = 0;
     if (roleEl && !reduceMotion) {
+      const nameSwap = document.querySelector('.hero .name-swap');   // logo <-> "mahe", same beat
       setInterval(() => {
         roleEl.classList.add('out');
+        nameSwap.classList.add('out');
         setTimeout(() => {
           roleIndex = (roleIndex + 1) % roles.length;
           roleEl.textContent = roles[roleIndex];
           roleEl.classList.remove('out');
+          nameSwap.dataset.show = nameSwap.dataset.show === 'logo' ? 'text' : 'logo';
+          nameSwap.classList.remove('out');
         }, 350);
       }, 2600);
     }
