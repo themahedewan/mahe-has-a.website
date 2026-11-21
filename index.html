@@ -591,8 +591,8 @@
       font-size: .81em;
     }
 
-    /* First name: alternates between the color logo and the word "mahe", in step
-   with the rotating title below and with the same fade-and-drop. The slot
+    /* First name: alternates between the color logo and the word "mahe" on every
+   other change of the rotating title below, with the same fade-and-drop. The slot
    keeps the logo's height either way, so nothing below it moves; the text
    sits at the bottom, just above "dewan". Screen readers hear "mahe dewan"
    once (from .sr-only); the alternating slot is hidden from them. */
@@ -2520,20 +2520,24 @@
 
     /* ---- Rotating role line + first name -----------------------------------------
        Fades the word out, swaps it, fades it back in. Screen readers get all three
-       from the aria-label instead. On the same beat, the first name switches
-       between the logo and the word "mahe". With reduced motion, the logo stays. */
+       from the aria-label instead. On every other title change, the first name
+       switches between the logo and the word "mahe". With reduced motion, the
+       logo stays. */
     const roles = ['technical artist', 'virtual production specialist', 'pretty cool guy'];
     const roleEl = document.querySelector('.rotor .w');
     let roleIndex = 0;
     if (roleEl && !reduceMotion) {
-      const nameSwap = document.querySelector('.hero .name-swap');   // logo <-> "mahe", same beat
+      const nameSwap = document.querySelector('.hero .name-swap');   // logo <-> "mahe", every other beat
+      let beat = 0;
       setInterval(() => {
+        const swapName = ++beat % 2 === 0;
         roleEl.classList.add('out');
-        nameSwap.classList.add('out');
+        if (swapName) nameSwap.classList.add('out');
         setTimeout(() => {
           roleIndex = (roleIndex + 1) % roles.length;
           roleEl.textContent = roles[roleIndex];
           roleEl.classList.remove('out');
+          if (!swapName) return;
           nameSwap.dataset.show = nameSwap.dataset.show === 'logo' ? 'text' : 'logo';
           nameSwap.classList.remove('out');
         }, 350);
