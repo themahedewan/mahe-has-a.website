@@ -27,9 +27,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- YouTube refuses to play embeds (error 153) unless the page sends a referrer -->
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <!-- Opening #reel or #resume directly: mark it before anything renders, so the
-       work tab (and its images) never starts loading in the background. -->
-  <script>if (/^#(resume)$/.test(location.hash)) document.documentElement.dataset.tab0 = location.hash.slice(1);</script>
+  <!-- Opening /resume/ (or an old #resume / #reel link) directly: mark it before
+       anything renders, so the work tab and its images never load in the background. -->
+  <script>if (location.pathname.startsWith('/resume') || /^#(resume)$/.test(location.hash)) document.documentElement.dataset.tab0 = location.pathname.startsWith('/resume') ? 'resume' : location.hash.slice(1);</script>
+  <!-- The same page is served at "/" and "/resume/"; every relative link resolves from the site root -->
+  <base href="/">
   <title>Mahe Dewan — Technical Artist &amp; Virtual Production</title>
   <meta name="description" content="Work and resume of Mahe Dewan, Emmy Award-winning technical artist and virtual production specialist working in Unreal Engine.">
   <meta property="og:title" content="Mahe Dewan — Technical Artist &amp; Virtual Production">
@@ -1715,7 +1717,7 @@
        ====================================================================== -->
   <nav class="site-nav" aria-label="Site">
     <div class="in">
-      <a class="mark" href="#" data-go="work"><span class="logo-swap"><img class="logo logo-color" src="img/logo.webp" alt="" width="34" height="34"><img class="logo logo-mono" src="img/logo-mono.webp" alt="" width="34" height="34"></span><span class="mark-name">mahe dewan</span></a>
+      <a class="mark" href="/" data-go="work"><span class="logo-swap"><img class="logo logo-color" src="img/logo.webp" alt="" width="34" height="34"><img class="logo logo-mono" src="img/logo-mono.webp" alt="" width="34" height="34"></span><span class="mark-name">mahe dewan</span></a>
       <div class="tabs" role="tablist" aria-label="Sections">
         <button class="tab" role="tab" id="t-work" data-tab="work" aria-controls="work" aria-selected="true">work</button>
         <button class="tab" role="tab" id="t-resume" data-tab="resume" aria-controls="resume" aria-selected="false" tabindex="-1">resume</button>
@@ -1800,7 +1802,7 @@
 
         <!-- Astucemedia: company summary card -->
         <article class="card co-card" data-group="astucemedia" data-company>
-          <a class="card-media" href="#resume" data-go="resume" aria-label="Astucemedia on the resume tab">
+          <a class="card-media" href="/resume/" data-go="resume" aria-label="Astucemedia on the resume tab">
             <span class="co-panel" aria-hidden="true" style="--c1:#262728;--c2:#212f44;--fg:#fff">
               <span class="co-name">Astucemedia</span>
               <span class="co-role">Virtual Production Lead (contract) · 2026–present</span>
@@ -1816,7 +1818,7 @@
 
         <!-- Lucid: company summary card -->
         <article class="card co-card" data-group="lucid" data-company>
-          <a class="card-media" href="#resume" data-go="resume" aria-label="Lucid on the resume tab">
+          <a class="card-media" href="/resume/" data-go="resume" aria-label="Lucid on the resume tab">
             <span class="co-panel" aria-hidden="true" style="--c1:#3b85cd;--c2:#9e917e;--fg:#0b0b0b">
               <span class="co-name">Lucid</span>
               <span class="co-role">Pipeline Technical Director (contract) · 2025–2026</span>
@@ -1961,7 +1963,7 @@
 
         <!-- disguise: company summary card -->
         <article class="card co-card" data-group="disguise" data-company>
-          <a class="card-media" href="#resume" data-go="resume" aria-label="disguise on the resume tab">
+          <a class="card-media" href="/resume/" data-go="resume" aria-label="disguise on the resume tab">
             <span class="co-panel" aria-hidden="true" style="--c1:#ff6df0;--c2:#6bffdc;--fg:#0b0b0b">
               <span class="co-name">disguise</span>
               <span class="co-role">Lead Unreal Technical Artist · 2022–2025</span>
@@ -2149,7 +2151,7 @@
 
         <!-- Silver Spoon: company summary card -->
         <article class="card co-card" data-group="silver" data-company>
-          <a class="card-media" href="#resume" data-go="resume" aria-label="Silver Spoon on the resume tab">
+          <a class="card-media" href="/resume/" data-go="resume" aria-label="Silver Spoon on the resume tab">
             <span class="co-panel shade" aria-hidden="true" style="--c1:#ac2f3e;--c2:#b792d6;--fg:#fff">
               <span class="co-name">Silver Spoon</span>
               <span class="co-role">Virtual Production Technical Director · 2019–2022</span>
@@ -2170,7 +2172,7 @@
         <div>
           <h2>and lots more!</h2>
           <p>Reach out for stories from sets, LED walls, VR escapades, and other cool things.</p>
-          <p>Or take a look at my <a href="#resume" data-go="resume">expanded resume</a>.</p>
+          <p>Or take a look at my <a href="/resume/" data-go="resume">expanded resume</a>.</p>
         </div>
         <div>
           <h2>Want More Mahe?</h2>
@@ -2393,7 +2395,7 @@
     <p class="mplus-sub">Includes expanded access to the reviewers, <span style="white-space:nowrap">up-and-coming</span> work, and a gateway to the guy himself.</p>
     <div class="mplus-actions">
       <a class="btn" href="mailto:mahedewan@gmail.com?subject=Mahee">email me</a>
-      <a class="mplus-alt" href="#resume" data-go="resume">see the resume →</a>
+      <a class="mplus-alt" href="/resume/" data-go="resume">see the resume →</a>
     </div>
   </dialog>
 
@@ -2415,17 +2417,27 @@
     const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 
-    /* ---- Tabs -------------------------------------------------------------------
-       "work" is the default. "#reel" or "#resume" in the URL opens that tab, so
-       those links can be shared directly. Arrow keys move between tabs. The
-       active tab is mirrored on <body data-tab> for tab-specific styling. */
+    /* ---- Tabs + pages -------------------------------------------------------------
+       Each tab has its own address: work is "/", the resume is "/resume/" (a real
+       page on the server too, so it loads directly and can be shared). Switching
+       tabs adds a history entry, so the browser's Back and Forward buttons move
+       between them and return to where you'd scrolled. Old "#resume" links still
+       work. Arrow keys move between tabs. The active tab is mirrored on
+       <body data-tab> for tab-specific styling. */
     const tabs = [...document.querySelectorAll('.tab')];
     const panels = {
       work: document.getElementById('work'),
       reel: document.getElementById('t-reel') && document.getElementById('reel'),   // only when the reel tab is shown
       resume: document.getElementById('resume'),
     };
-    const tabFromHash = () => (panels[location.hash.slice(1)] ? location.hash.slice(1) : 'work');
+    const PATHS = { work: '/', resume: '/resume/', reel: '/#reel' };
+    const TITLES = { work: 'Mahe Dewan — Technical Artist & Virtual Production', resume: 'Mahe Dewan — Resume', reel: 'Mahe Dewan — Reel' };
+    const tabFromLocation = () => {
+      if (location.pathname.startsWith('/resume')) return 'resume';
+      const hashTab = location.hash.slice(1);
+      return panels[hashTab] ? hashTab : 'work';
+    };
+    history.scrollRestoration = 'manual';    // scroll positions are restored per tab below
 
     // Reel: the tab shows a lightweight still frame with a play button. YouTube's
     // player (over a megabyte of scripts) only loads when someone presses play,
@@ -2450,7 +2462,7 @@
     setNavHeight();
     addEventListener('resize', setNavHeight);
 
-    function applyTab(name, updateUrl) {
+    function applyTab(name, updateUrl, scrollTo = 0) {
       if (!panels[name]) name = 'work';
       delete document.documentElement.dataset.tab0;   // pre-render hint from <head> is no longer needed
       tabs.forEach((t) => {
@@ -2462,21 +2474,25 @@
       document.getElementById('resume-tools').hidden = name !== 'resume';
       document.body.dataset.tab = name;
       setReelPlaying(name === 'reel');
-      if (updateUrl) history.replaceState(null, '', name === 'work' ? location.pathname + location.search : '#' + name);
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.title = TITLES[name];
+      if (updateUrl) {
+        history.replaceState({ ...history.state, y: scrollY }, '');        // remember where we were
+        history.pushState({ tab: name, y: 0 }, '', PATHS[name]);
+      }
+      window.scrollTo({ top: scrollTo, behavior: 'instant' });
     }
 
     // Switching tabs cross-fades the old tab into the new one. Browsers with the
     // View Transitions API snapshot the page before and after and blend the two;
     // others fade the new tab in. The nav is its own transition group, so it stays
     // put while the content beneath it fades. Skipped with reduced motion.
-    function showTab(name, updateUrl) {
+    function showTab(name, updateUrl, scrollTo = 0) {
       if (!panels[name]) name = 'work';
-      if (name === document.body.dataset.tab || reduceMotion) return applyTab(name, updateUrl);
+      if (name === document.body.dataset.tab || reduceMotion) return applyTab(name, updateUrl, scrollTo);
       if (document.startViewTransition) {
-        document.startViewTransition(() => applyTab(name, updateUrl));
+        document.startViewTransition(() => applyTab(name, updateUrl, scrollTo));
       } else {
-        applyTab(name, updateUrl);
+        applyTab(name, updateUrl, scrollTo);
         panels[name].classList.remove('tab-fade-in');
         void panels[name].offsetWidth;            // restart the animation
         panels[name].classList.add('tab-fade-in');
@@ -2494,8 +2510,14 @@
     });
     document.querySelectorAll('[data-go]').forEach((a) =>
       a.addEventListener('click', (e) => { e.preventDefault(); showTab(a.dataset.go, true); }));
-    applyTab(tabFromHash(), false);
-    addEventListener('hashchange', () => showTab(tabFromHash(), false));
+    // First load: open the tab for this address, and tidy an old "#resume" link to "/resume/"
+    {
+      const first = tabFromLocation();
+      history.replaceState({ tab: first, y: 0 }, '', location.hash === '#resume' ? PATHS.resume : location.href);
+      applyTab(first, false);
+    }
+    // Back / Forward: switch to that entry's tab and its scroll position
+    addEventListener('popstate', (e) => showTab(tabFromLocation(), false, (e.state && e.state.y) || 0));
 
 
     /* ---- Name in the nav -------------------------------------------------------
