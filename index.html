@@ -1321,6 +1321,22 @@
     }
 
     /* ---- Resume tab: download buttons -------------------------------------- */
+
+    /* Resume role highlight: arriving from a company card tints that role with the
+   company's color (--hl, set by script). The box-shadow spread extends the
+   tint around the text without moving the layout; it fades in quickly and
+   out slowly when .flash is removed after three seconds. */
+    #resume .job {
+      border-radius: 10px;
+      transition: background-color 1.2s ease,box-shadow 1.2s ease;
+      scroll-margin-top: 90px;
+    }
+    #resume .job.flash {
+      --hl-mix: color-mix(in srgb,var(--hl,#e73c7e) 13%,transparent);
+      background-color: var(--hl-mix);
+      box-shadow: 0 0 0 16px var(--hl-mix);
+      transition-duration: .35s;
+    }
     .resume-tools {
       max-width: 980px;
       margin: 0 auto;
@@ -1802,7 +1818,7 @@
 
         <!-- Astucemedia: company summary card -->
         <article class="card co-card" data-group="astucemedia" data-company>
-          <a class="card-media" href="/resume/" data-go="resume" aria-label="Astucemedia on the resume tab">
+          <a class="card-media" href="/resume/#job-astucemedia" data-go="resume" data-job="job-astucemedia" aria-label="Astucemedia on the resume">
             <span class="co-panel" aria-hidden="true" style="--c1:#262728;--c2:#212f44;--fg:#fff">
               <span class="co-name">Astucemedia</span>
               <span class="co-role">Virtual Production Lead (contract) · 2026–present</span>
@@ -1818,7 +1834,7 @@
 
         <!-- Lucid: company summary card -->
         <article class="card co-card" data-group="lucid" data-company>
-          <a class="card-media" href="/resume/" data-go="resume" aria-label="Lucid on the resume tab">
+          <a class="card-media" href="/resume/#job-lucid" data-go="resume" data-job="job-lucid" aria-label="Lucid on the resume">
             <span class="co-panel" aria-hidden="true" style="--c1:#3b85cd;--c2:#9e917e;--fg:#0b0b0b">
               <span class="co-name">Lucid</span>
               <span class="co-role">Pipeline Technical Director (contract) · 2025–2026</span>
@@ -1963,7 +1979,7 @@
 
         <!-- disguise: company summary card -->
         <article class="card co-card" data-group="disguise" data-company>
-          <a class="card-media" href="/resume/" data-go="resume" aria-label="disguise on the resume tab">
+          <a class="card-media" href="/resume/#job-disguise" data-go="resume" data-job="job-disguise" aria-label="disguise on the resume">
             <span class="co-panel" aria-hidden="true" style="--c1:#ff6df0;--c2:#6bffdc;--fg:#0b0b0b">
               <span class="co-name">disguise</span>
               <span class="co-role">Lead Unreal Technical Artist · 2022–2025</span>
@@ -2151,7 +2167,7 @@
 
         <!-- Silver Spoon: company summary card -->
         <article class="card co-card" data-group="silver" data-company>
-          <a class="card-media" href="/resume/" data-go="resume" aria-label="Silver Spoon on the resume tab">
+          <a class="card-media" href="/resume/#job-silver-spoon" data-go="resume" data-job="job-silver-spoon" aria-label="Silver Spoon on the resume">
             <span class="co-panel shade" aria-hidden="true" style="--c1:#ac2f3e;--c2:#b792d6;--fg:#fff">
               <span class="co-name">Silver Spoon</span>
               <span class="co-role">Virtual Production Technical Director · 2019–2022</span>
@@ -2228,7 +2244,7 @@
 
       <section>
       <h2 class="sec">experience</h2>
-      <article class="job">
+      <article class="job" id="job-astucemedia">
       <h3>Virtual Production Lead <span class="co">@ Astucemedia</span> <span class="meta">(contract)</span></h3>
       <p class="dates">Jul 2026 – Present</p>
       <ul>
@@ -2238,7 +2254,7 @@
       <li>Handle installation, integration, and production support at the client’s New York City facilities.</li>
       </ul>
       </article>
-      <article class="job">
+      <article class="job" id="job-lucid">
       <h3>Pipeline Technical Director <span class="co">@ Lucid</span> <span class="meta">(contract)</span></h3>
       <p class="dates">Sep 2025 – May 2026</p>
       <ul>
@@ -2248,7 +2264,7 @@
       <li>Integrated LLMs (primarily Claude) into the pipeline: AI agents for IT automation, Python scripting support, and experimental Unreal MCP tools that read Blueprints to generate documentation.</li>
       </ul>
       </article>
-      <article class="job">
+      <article class="job" id="job-disguise">
       <h3>Lead Unreal Technical Artist <span class="co">@ Disguise</span></h3>
       <p class="dates">Jun 2022 – Sep 2025</p>
       <ul>
@@ -2261,7 +2277,7 @@
       <li>Researched and prototyped generative AI workflows, including Character AI for MetaHumans; provided client-facing on-site support, often live in a hot-seat.</li>
       </ul>
       </article>
-      <article class="job">
+      <article class="job" id="job-silver-spoon">
       <h3>Virtual Production Technical Director <span class="co">@ Silver Spoon</span></h3>
       <p class="dates">Oct 2019 – Jun 2022</p>
       <ul>
@@ -2276,7 +2292,7 @@
       <details class="more">
       <summary><span class="lbl">earlier experience</span><span class="hint">2013 – 2024 · 10 roles</span></summary>
       <div class="more-body">
-      <article class="job">
+      <article class="job" id="job-endless-studios">
       <h3>Game Design/Development Mentor <span class="co">@ Endless Studios</span></h3>
       <p class="dates">Jan 2024 – Aug 2024</p>
       <ul>
@@ -2284,7 +2300,7 @@
       <li>Assisted QA sessions, supported game jam projects, and created educational and archival reference materials.</li>
       </ul>
       </article>
-      <article class="job">
+      <article class="job" id="job-sch-co-usa">
       <h3>VR Developer/Programmer <span class="co">@ Schüco USA</span></h3>
       <p class="dates">Dec 2018 – Oct 2019</p>
       <ul>
@@ -2293,7 +2309,7 @@
       <li>Built a VR quality assurance training simulation for skilled factory workers, plus window-system interactions, real-time geometry manipulation, and navigation systems.</li>
       </ul>
       </article>
-      <article class="job">
+      <article class="job" id="job-wonder-immersive">
       <h3>Lead Virtual Reality Designer <span class="co">@ Wonder Immersive</span></h3>
       <p class="dates">Mar 2018 – Dec 2018</p>
       <ul>
@@ -2301,14 +2317,14 @@
       <li>Exhibited at VR festivals in New York City and internationally in Greece.</li>
       </ul>
       </article>
-      <article class="job">
+      <article class="job" id="job-brigade-marketing">
       <h3>Junior Art Director <span class="co">@ Brigade Marketing</span></h3>
       <p class="dates">Oct 2017 – Oct 2018</p>
       <ul>
       <li>Designed web ads, social content, Snapchat videos, and print for Universal Pictures, Disney, Fox, and Warner Bros. campaigns, including <em>Night School</em> and <em>The House with a Clock in Its Walls</em>, using the Adobe Creative Suite.</li>
       </ul>
       </article>
-      <article class="job">
+      <article class="job" id="job-psyche-media">
       <h3>VR Programmer/Designer <span class="co">@ Psyche Media</span></h3>
       <p class="dates">Jul 2016 – Oct 2017</p>
       <ul>
@@ -2462,8 +2478,9 @@
     setNavHeight();
     addEventListener('resize', setNavHeight);
 
-    function applyTab(name, updateUrl, scrollTo = 0) {
+    function applyTab(name, updateUrl, scrollTo = 0, path = PATHS[name]) {
       if (!panels[name]) name = 'work';
+      const leavingY = scrollY;   // read before the current tab is hidden (the page gets shorter)
       delete document.documentElement.dataset.tab0;   // pre-render hint from <head> is no longer needed
       tabs.forEach((t) => {
         const on = t.dataset.tab === name;
@@ -2476,23 +2493,31 @@
       setReelPlaying(name === 'reel');
       document.title = TITLES[name];
       if (updateUrl) {
-        history.replaceState({ ...history.state, y: scrollY }, '');        // remember where we were
-        history.pushState({ tab: name, y: 0 }, '', PATHS[name]);
+        history.replaceState({ ...history.state, y: leavingY }, '');       // remember where we were
+        history.pushState({ tab: name, y: 0 }, '', path);
       }
       window.scrollTo({ top: scrollTo, behavior: 'instant' });
+      // Far-down cards are only measured once shown (content-visibility), so the
+      // page can be briefly shorter than before and cut a restored scroll short.
+      // Re-apply it after the next layouts.
+      if (scrollTo > 0) {
+        const again = () => { if (Math.abs(scrollY - scrollTo) > 2) window.scrollTo({ top: scrollTo, behavior: 'instant' }); };
+        requestAnimationFrame(() => requestAnimationFrame(again));
+        setTimeout(again, 150);
+      }
     }
 
     // Switching tabs cross-fades the old tab into the new one. Browsers with the
     // View Transitions API snapshot the page before and after and blend the two;
     // others fade the new tab in. The nav is its own transition group, so it stays
     // put while the content beneath it fades. Skipped with reduced motion.
-    function showTab(name, updateUrl, scrollTo = 0) {
+    function showTab(name, updateUrl, scrollTo = 0, path) {
       if (!panels[name]) name = 'work';
-      if (name === document.body.dataset.tab || reduceMotion) return applyTab(name, updateUrl, scrollTo);
+      if (name === document.body.dataset.tab || reduceMotion) return applyTab(name, updateUrl, scrollTo, path);
       if (document.startViewTransition) {
-        document.startViewTransition(() => applyTab(name, updateUrl, scrollTo));
+        document.startViewTransition(() => applyTab(name, updateUrl, scrollTo, path));
       } else {
-        applyTab(name, updateUrl, scrollTo);
+        applyTab(name, updateUrl, scrollTo, path);
         panels[name].classList.remove('tab-fade-in');
         void panels[name].offsetWidth;            // restart the animation
         panels[name].classList.add('tab-fade-in');
@@ -2509,12 +2534,38 @@
       });
     });
     document.querySelectorAll('[data-go]').forEach((a) =>
-      a.addEventListener('click', (e) => { e.preventDefault(); showTab(a.dataset.go, true); }));
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (!a.dataset.job) return showTab(a.dataset.go, true);
+        // Company cards: land on that role in the resume (its own address, e.g.
+        // /resume/#job-disguise) and highlight it once the cross-fade is done
+        const color = getComputedStyle(a.querySelector('.co-panel')).getPropertyValue('--c1');
+        showTab('resume', true, 0, PATHS.resume + '#' + a.dataset.job);
+        setTimeout(() => highlightJob(a.dataset.job, color), reduceMotion ? 0 : 450);
+      }));
+
+    // Scroll a resume role into view below the nav and give it a soft tint (the
+    // company's card color) that fades away after three seconds.
+    function highlightJob(id, color) {
+      const job = document.getElementById(id);
+      if (!job) return;
+      if (color) job.style.setProperty('--hl', color.trim());
+      const top = job.getBoundingClientRect().top + scrollY - nav.offsetHeight - 28;
+      window.scrollTo({ top, behavior: reduceMotion ? 'instant' : 'smooth' });
+      job.classList.add('flash');
+      clearTimeout(job.flashTimer);
+      job.flashTimer = setTimeout(() => job.classList.remove('flash'), 3000);
+    }
     // First load: open the tab for this address, and tidy an old "#resume" link to "/resume/"
     {
       const first = tabFromLocation();
       history.replaceState({ tab: first, y: 0 }, '', location.hash === '#resume' ? PATHS.resume : location.href);
       applyTab(first, false);
+      // A shared link like /resume/#job-disguise opens on that role, highlighted
+      if (first === 'resume' && location.hash.startsWith('#job-')) {
+        const card = document.querySelector(`[data-job="${location.hash.slice(1)}"] .co-panel`);
+        setTimeout(() => highlightJob(location.hash.slice(1), card && getComputedStyle(card).getPropertyValue('--c1')), 300);
+      }
     }
     // Back / Forward: switch to that entry's tab and its scroll position
     addEventListener('popstate', (e) => showTab(tabFromLocation(), false, (e.state && e.state.y) || 0));
