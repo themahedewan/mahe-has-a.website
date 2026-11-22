@@ -2750,8 +2750,8 @@
          one list's width so the loop is seamless.
        - Pauses on hover/focus. Horizontal trackpad scroll, Shift+wheel, or a
          sideways swipe moves it by hand; vertical scrolling still scrolls the page.
-       - Clicking "reviews" expands it into a full list; clicking again, or
-         scrolling it out of view, collapses it back to the ticker. */
+       - Clicking "reviews" expands it into a full list, which stays open until
+         "reviews" is clicked again. */
     const ticker = document.querySelector('.ticker');
     const track = ticker.querySelector('.ticker-track');
     const toggle = ticker.querySelector('.ticker-tag');
@@ -2816,8 +2816,7 @@
     //   1. the current contents fade out (.fading),
     //   2. the layout switches and the box's height glides from old to new,
     //   3. the new contents fade in (list items stagger in one by one).
-    // When it's collapsed because it scrolled out of view, it switches instantly
-    // so nothing moves off screen.
+    // With reduced motion it switches instantly.
     let animating = false;
     function applyOpen(next) {
       open = next;
@@ -2863,8 +2862,7 @@
     mplus.querySelector('[data-close]').addEventListener('click', () => mplus.close());
     mplus.addEventListener('click', (e) => { if (e.target === mplus) mplus.close(); });   // backdrop
     mplus.querySelector('[data-go]').addEventListener('click', () => mplus.close());
-    new IntersectionObserver(([entry]) => { if (!entry.isIntersecting) setOpen(false, false); })
-      .observe(ticker);
+    // The expanded list stays open until the visitor closes it with "reviews".
 
 
     /* ---- Scroll background ------------------------------------------------------
