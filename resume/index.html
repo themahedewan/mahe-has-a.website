@@ -414,6 +414,37 @@
       transition: color .9s ease;
     }
 
+    /* ---- Accent serif ------------------------------------------------------ */
+
+    /* Young Serif (SIL Open Font License, served from /fonts/ next to the page)
+   sets a few playful phrases apart from the Schibsted Grotesk text. It has a
+   single regular weight, so it's never bolded. */
+    @font-face {
+      font-family: "Young Serif";
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url(fonts/young-serif-latin-ext-400-normal.woff2) format("woff2");
+      unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+    }
+    @font-face {
+      font-family: "Young Serif";
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url(fonts/young-serif-latin-400-normal.woff2) format("woff2");
+      unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+    }
+    .serif,
+    .rotor .w.serif,
+    #resume .contact .loc,
+    #resume .role .lt,
+    #resume .foot p {
+      font-family: "Young Serif",Georgia,serif;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
     /* ---- Navigation + tabs ------------------------------------------------- */
 
     /* Sticky, translucent bar. The two tab buttons swap which <section> is shown;
@@ -2186,7 +2217,7 @@
       <!-- Closing call to action -->
       <div class="more-work">
         <div>
-          <h2>and lots more!</h2>
+          <h2 class="serif">and lots more!</h2>
           <p>Reach out for stories from sets, LED walls, VR escapades, and other cool things.</p>
           <p>Or take a look at my <a href="/resume/" data-go="resume">expanded resume</a>.</p>
         </div>
@@ -2407,8 +2438,8 @@
   <dialog class="mplus-dialog" id="mplus" aria-labelledby="mplus-title">
     <button type="button" class="mplus-x" data-close aria-label="Close">×</button>
     <p class="mplus-kicker"><span class="mplus">Mahe<b>e</b></span></p>
-    <h2 id="mplus-title">Get <span class="mplus">Mahe<b>e</b></span> By Hiring Me!</h2>
-    <p class="mplus-sub">Includes expanded access to the reviewers, <span style="white-space:nowrap">up-and-coming</span> work, and a gateway to the guy himself.</p>
+    <h2 id="mplus-title">Get <span class="mplus">Mahe<b>e</b></span> By <span class="serif">Hiring Me</span>!</h2>
+    <p class="mplus-sub">Includes expanded access to the reviewers, <span style="white-space:nowrap">up-and-coming</span> work, and <span class="serif">a gateway to the guy himself</span>.</p>
     <div class="mplus-actions">
       <a class="btn" href="mailto:mahedewan@gmail.com?subject=Mahee">email me</a>
       <a class="mplus-alt" href="/resume/" data-go="resume">see the resume →</a>
@@ -2609,6 +2640,7 @@
         setTimeout(() => {
           roleIndex = (roleIndex + 1) % roles.length;
           roleEl.textContent = roles[roleIndex];
+          roleEl.classList.toggle('serif', roles[roleIndex] === 'pretty cool guy');   // the joke title gets the accent serif
           roleEl.classList.remove('out');
           if (!swapName) return;
           nameSwap.dataset.show = nameSwap.dataset.show === 'logo' ? 'text' : 'logo';
