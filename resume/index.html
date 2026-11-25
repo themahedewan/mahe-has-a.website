@@ -470,14 +470,16 @@
     .site-nav .in {
       max-width: 1180px;
       margin: 0 auto;
-      padding: 12px 32px;
+      padding: 20px 32px;
       display: flex;
       align-items: center;
       gap: 20px;
+      transition: padding .35s ease;
     }
     .site-nav .mark {
       font-weight: 600;
-      font-size: 17px;
+      font-size: 21px;
+      transition: font-size .35s ease,gap .35s ease;
       text-decoration: none;
       margin-right: auto;
       letter-spacing: -.01em;
@@ -542,9 +544,12 @@
       opacity: 1;
     }
     .site-nav .logo-swap {
-      width: 34px;
-      height: 34px;
+      width: 44px;
+      height: 44px;
       margin: -4px 0;
+    }
+    .site-nav .logo-swap,.site-nav .tab {
+      transition: opacity .35s ease,transform .35s ease,width .35s ease,height .35s ease,font-size .35s ease,padding .35s ease;
     }
     .tabs {
       display: flex;
@@ -555,10 +560,10 @@
       border: 0;
       background: none;
       font: inherit;
-      font-size: 16px;
+      font-size: 19px;
       font-weight: 400;
       color: var(--mute);
-      padding: 6px 12px;
+      padding: 8px 15px;
       border-radius: 8px;
       cursor: pointer;
     }
@@ -578,6 +583,24 @@
     .ticker-tag:focus-visible {
       outline: 2px solid var(--link);
       outline-offset: 3px;
+    }
+
+    /* The bar starts a size up at the top of the page and settles to its
+   compact size once you scroll away (script toggles .compact). */
+    .site-nav.compact .in {
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+    .site-nav.compact .mark {
+      font-size: 17px;
+    }
+    .site-nav.compact .logo-swap {
+      width: 34px;
+      height: 34px;
+    }
+    .site-nav.compact .tab {
+      font-size: 16px;
+      padding: 6px 12px;
     }
     [hidden] {
       display: none!important;
@@ -1524,16 +1547,27 @@
       }
       .site-nav .mark {
         gap: 8px;
-        font-size: 15px;
+        font-size: 18px;
       }
       .site-nav .logo-swap {
-        width: 30px;
-        height: 30px;
+        width: 36px;
+        height: 36px;
       }
       .tabs {
         gap: 0;
       }
       .tab {
+        padding: 7px 12px;
+        font-size: 18px;
+      }
+      .site-nav.compact .mark {
+        font-size: 15px;
+      }
+      .site-nav.compact .logo-swap {
+        width: 30px;
+        height: 30px;
+      }
+      .site-nav.compact .tab {
         padding: 6px 10px;
         font-size: 15px;
       }
@@ -2610,6 +2644,20 @@
     // Back / Forward: switch to that entry's tab and its scroll position
     addEventListener('popstate', (e) => showTab(tabFromLocation(), false, (e.state && e.state.y) || 0));
 
+
+    /* ---- Nav size ---------------------------------------------------------------
+       Big at the very top, compact once scrolled. Two thresholds (on past 24px,
+       off under 8px) so the bar's own height change can't make it flicker. */
+    {
+      let compact = null;
+      const size = () => {
+        const y = scrollY, next = compact ? y > 8 : y > 24;
+        if (next !== compact) { compact = next; nav.classList.toggle('compact', next); }
+      };
+      addEventListener('scroll', size, { passive: true });
+      addEventListener('popstate', () => requestAnimationFrame(size));
+      size();
+    }
 
     /* ---- Name in the nav -------------------------------------------------------
        Watches the big name at the top of the work tab and the resume tab. While
