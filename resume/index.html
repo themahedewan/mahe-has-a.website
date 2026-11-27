@@ -1207,6 +1207,38 @@
       opacity: 1;
       transform: none;
     }
+
+    /* "read" cards: a pointing hand that jiggles while the card is hovered */
+    .cta .hand {
+      display: inline-block;
+      margin-left: 2px;
+      transform-origin: 30% 60%;
+    }
+    .card:hover .cta .hand,.card-media:focus-visible .cta .hand {
+      animation: jiggle .9s ease-in-out infinite;
+    }
+    @keyframes jiggle {
+      0%,100% {
+        transform: translateX(0) rotate(0);
+      }
+      20% {
+        transform: translateX(2px) rotate(-8deg);
+      }
+      40% {
+        transform: translateX(-1px) rotate(6deg);
+      }
+      60% {
+        transform: translateX(2px) rotate(-4deg);
+      }
+      80% {
+        transform: translateX(0) rotate(2deg);
+      }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .card:hover .cta .hand {
+        animation: none;
+      }
+    }
     .card-body h3 {
       margin: 12px 0 0;
       font-weight: 600;
@@ -1881,7 +1913,7 @@
              data-fx="cbs-news-2026-midterm-elections">
             <img src="img/cbs-news-2026-midterm-elections.webp" width="1024" height="640" alt="" loading="lazy" decoding="async" onerror="this.remove()">
             <span class="poster" aria-hidden="true">Astucemedia</span>
-            <span class="cta">read ↗</span>
+            <span class="cta">read <span class="hand" aria-hidden="true">👉</span></span>
           </a>
           <div class="card-body">
             <h3>CBS News · 2026 Midterm Elections</h3>
@@ -1969,7 +2001,7 @@
              data-fx="tudn-copa-am-rica-paris-olympics">
             <img src="img/tudn-copa-am-rica-paris-olympics.webp" width="1024" height="640" alt="" loading="lazy" decoding="async" onerror="this.remove()">
             <span class="poster" aria-hidden="true">disguise</span>
-            <span class="cta">read ↗</span>
+            <span class="cta">read <span class="hand" aria-hidden="true">👉</span></span>
           </a>
           <div class="card-body">
             <h3>TUDN Copa América + Paris Olympics</h3>
@@ -1987,7 +2019,7 @@
              data-fx="portland-trail-blazers">
             <img src="img/portland-trail-blazers.webp" width="1024" height="640" alt="" loading="lazy" decoding="async" onerror="this.remove()">
             <span class="poster" aria-hidden="true">disguise</span>
-            <span class="cta">read ↗</span>
+            <span class="cta">read <span class="hand" aria-hidden="true">👉</span></span>
           </a>
           <div class="card-body">
             <h3>Portland Trail Blazers</h3>
@@ -2005,7 +2037,7 @@
              data-fx="nbc-midterms">
             <img src="img/nbc-midterms.webp" width="1024" height="640" alt="" loading="lazy" decoding="async" onerror="this.remove()">
             <span class="poster" aria-hidden="true">disguise</span>
-            <span class="cta">read ↗</span>
+            <span class="cta">read <span class="hand" aria-hidden="true">👉</span></span>
             <span class="badge">News Emmy · named recipient</span>
           </a>
           <div class="card-body">
@@ -2024,7 +2056,7 @@
              data-fx="tudn-world-cup">
             <img src="img/tudn-world-cup.webp" width="1024" height="640" alt="" loading="lazy" decoding="async" onerror="this.remove()">
             <span class="poster" aria-hidden="true">disguise</span>
-            <span class="cta">read ↗</span>
+            <span class="cta">read <span class="hand" aria-hidden="true">👉</span></span>
           </a>
           <div class="card-body">
             <h3>TUDN World Cup</h3>
@@ -2042,7 +2074,7 @@
              data-fx="dazn-virtual-set">
             <img src="img/dazn-virtual-set.webp" width="1024" height="640" alt="" loading="lazy" decoding="async" onerror="this.remove()">
             <span class="poster" aria-hidden="true">disguise</span>
-            <span class="cta">read ↗</span>
+            <span class="cta">read <span class="hand" aria-hidden="true">👉</span></span>
           </a>
           <div class="card-body">
             <h3>DAZN Virtual Set</h3>
@@ -2192,7 +2224,7 @@
              data-fx="joji-777">
             <img src="img/joji-777.webp" width="1024" height="640" alt="" loading="lazy" decoding="async" onerror="this.remove()">
             <span class="poster" aria-hidden="true">Silver Spoon</span>
-            <span class="cta">read ↗</span>
+            <span class="cta">read <span class="hand" aria-hidden="true">👉</span></span>
           </a>
           <div class="card-body">
             <h3>Joji · 777</h3>
